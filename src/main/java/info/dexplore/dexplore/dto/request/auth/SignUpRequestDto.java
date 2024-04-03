@@ -29,6 +29,6 @@ public class SignUpRequestDto {
     @NotBlank
     private String certificationNumber;
 
-    private String role;
+    private String role = "ROLE_USER";
 
 }
