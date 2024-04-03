@@ -136,7 +136,7 @@ public class AuthServiceImpl implements AuthService{
 
             String role = requestDto.getRole();
             // TODO 나중에  ROLE 상수로 리팩토링(이하 코드도 포함)
-            if(!role.equals("ROLE_USER") || !role.equals("ROLE_ADMIN"))
+            if(!role.equals("ROLE_USER") && !role.equals("ROLE_ADMIN"))
                 return SignUpResponseDto.wrongRole();
 
 
