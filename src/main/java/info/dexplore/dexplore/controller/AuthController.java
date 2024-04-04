@@ -63,6 +63,11 @@ public class AuthController {
         return response;
     }
 
+    /**
+     * 로그인
+     * @param requestBody
+     * @return validationFailed, signinFailed, databaseError, success
+     */
     @PostMapping("/sign-in")
     public ResponseEntity<? super SignInResponseDto> signIn (@RequestBody @Valid SignInRequestDto requestBody) {
         ResponseEntity<? super SignInResponseDto> response = authService.signIn(requestBody);

@@ -28,5 +28,4 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         response.sendRedirect("https://dexplore.info/auth/oauth-response/" + token + "/3600");
     }
-
 }
