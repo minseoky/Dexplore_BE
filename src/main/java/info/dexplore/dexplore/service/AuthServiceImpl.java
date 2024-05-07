@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import info.dexplore.dexplore.common.Role;
 
 @Service
 @RequiredArgsConstructor
@@ -135,22 +136,20 @@ public class AuthServiceImpl implements AuthService{
             requestDto.setPassword(encodedPassword);
 
             String role = requestDto.getRole();
-            // TODO 나중에  ROLE 상수로 리팩토링(이하 코드도 포함)
-            if(!role.equals("ROLE_USER") && !role.equals("ROLE_ADMIN"))
+
+            // 유저 확인
+            if(!role.equals(Role.USER) && !role.equals(Role.ADMIN))
                 return SignUpResponseDto.wrongRole();
 
 
-            if(role.equals("ROLE_USER")) {
-                UserEntity userEntity = new UserEntity(userId, encodedPassword, email, "app", "ROLE_USER");
+            if(role.equals(Role.USER)) {
+                UserEntity userEntity = new UserEntity(userId, encodedPassword, email, "app", Role.USER);
                 userRepository.save(userEntity);
             }
-            else if(role.equals("ROLE_ADMIN")) {
-                UserEntity userEntity = new UserEntity(userId, encodedPassword, email, "app", "ROLE_ADMIN");
+            else if(role.equals(Role.ADMIN)) {
+                UserEntity userEntity = new UserEntity(userId, encodedPassword, email, "app", Role.ADMIN);
                 userRepository.save(userEntity);
             }
-            // TODO ----------
-
-
             certificationRepository.deleteByUserId(userId);
 
 
