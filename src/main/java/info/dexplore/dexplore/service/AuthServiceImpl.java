@@ -74,7 +74,6 @@ public class AuthServiceImpl implements AuthService{
             CertificationEntity certificationEntity = new CertificationEntity(id, email, certificationNumber);
             certificationRepository.save(certificationEntity);
 
-
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDto.databaseError();
