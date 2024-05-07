@@ -64,7 +64,7 @@ public class AuthServiceImpl implements AuthService{
             String id = requestDto.getId();
             String email = requestDto.getEmail();
             boolean exists = userRepository.existsByUserId(id);
-            if(exists) return IdCheckResponseDto.duplicateId();
+            if(exists) return EmailCertificationResponseDto.duplicateId();
 
             String certificationNumber = CertificationNumberProvider.generateNumber();
 
@@ -73,6 +73,7 @@ public class AuthServiceImpl implements AuthService{
 
             CertificationEntity certificationEntity = new CertificationEntity(id, email, certificationNumber);
             certificationRepository.save(certificationEntity);
+
 
         } catch (Exception e) {
             e.printStackTrace();
