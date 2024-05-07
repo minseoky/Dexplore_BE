@@ -29,6 +29,7 @@ public class SignUpRequestDto {
     @NotBlank
     private String certificationNumber;
 
-    private String role = "ROLE_USER";
+    @Pattern(regexp = "^(ROLE_USER|ROLE_ADMIN)$")
+    private String role;
 
 }
