@@ -1,5 +1,6 @@
 package info.dexplore.dexplore.dto.request.main;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -23,6 +24,7 @@ public class SaveMuseumRequestDto {
     private String entPrice;
 
     @NotBlank
+    @Email
     private String museumEmail;
 
     @NotBlank
