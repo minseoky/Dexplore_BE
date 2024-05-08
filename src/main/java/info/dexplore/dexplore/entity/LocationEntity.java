@@ -1,10 +1,7 @@
 package info.dexplore.dexplore.entity;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,8 +15,9 @@ import java.math.BigDecimal;
 @Table(name = "location")
 public class LocationEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "location_id")
-    private String locationId;
+    private Long locationId;
 
     private BigDecimal latitude;
     private BigDecimal longitude;

@@ -1,10 +1,7 @@
 package info.dexplore.dexplore.entity;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,14 +13,18 @@ import lombok.NoArgsConstructor;
 @Table(name = "museum")
 public class MuseumEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "museum_id")
-    private String museumId;
+    private Long museumId;
 
     @Column(name = "museum_name")
     private String museumName;
 
+    @Column(name = "user_id")
+    private String userId;
+
     @Column(name = "location_id")
-    private String locationId;
+    private Long locationId;
 
     @Column(name = "ent_price")
     private String entPrice;
