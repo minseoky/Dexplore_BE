@@ -22,7 +22,7 @@ public class AuthController {
 
     /**
      * Id 중복 체크
-     * @return validationFailed, duplicateId, databaseError, success
+     * @return validationFailed, duplicateMuseumName, databaseError, success
      */
     @PostMapping("/id-check")
     public ResponseEntity<? super IdCheckResponseDto> idCheck (@RequestBody @Valid IdCheckRequestDto requestBody) {

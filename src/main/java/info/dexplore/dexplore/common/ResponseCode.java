@@ -18,4 +18,12 @@ public interface ResponseCode {
 
     String WRONG_ROLE = "WR";
 
+    String MUSEUM_NOT_FOUND = "MNT";
+
+    String ID_NOT_MATCHING = "INM";
+
+    String ID_NOT_FOUND = "INF";
+
+    String DUPLICATE_MUSEUM_NAME = "DMN";
+
 }

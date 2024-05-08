@@ -18,4 +18,12 @@ public interface ResponseMessage {
 
     String WRONG_ROLE = "Wrong role.";
 
+    String MUSEUM_NOT_FOUND = "Museum not found.";
+
+    String ID_NOT_MATCHING = "User id not matching.";
+
+    String ID_NOT_FOUND = "Id not found.";
+
+    String DUPLICATE_MUSEUM_NAME = "Duplicated museum name.";
+
 }
