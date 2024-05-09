@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -39,6 +40,7 @@ public class MainServiceImpl implements MainService {
      * @return validationFailed, databaseError, duplicatedMuseumName, idNotFound, success
      */
     @Override
+    @Transactional
     public ResponseEntity<? super SaveMuseumResponseDto> saveMuseum(SaveMuseumRequestDto requestDto) {
 
         try {
@@ -125,6 +127,7 @@ public class MainServiceImpl implements MainService {
      * @return validationFailed, databaseError, idNotFound, success
      */
     @Override
+    @Transactional
     public ResponseEntity<? super UpdateMuseumResponseDto> updateMuseum(UpdateMuseumRequestDto requestDto) {
         try {
 
