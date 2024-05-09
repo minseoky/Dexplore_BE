@@ -1,10 +1,12 @@
 package info.dexplore.dexplore.service;
 
 import info.dexplore.dexplore.dto.request.main.GetMuseumRequestDto;
+import info.dexplore.dexplore.dto.request.main.UpdateMuseumRequestDto;
 import info.dexplore.dexplore.dto.request.main.SaveMuseumRequestDto;
 import info.dexplore.dexplore.dto.response.ResponseDto;
 import info.dexplore.dexplore.dto.response.main.GetMuseumListResponseDto;
 import info.dexplore.dexplore.dto.response.main.GetMuseumResponseDto;
+import info.dexplore.dexplore.dto.response.main.UpdateMuseumResponseDto;
 import info.dexplore.dexplore.dto.response.main.SaveMuseumResponseDto;
 import info.dexplore.dexplore.entity.LocationEntity;
 import info.dexplore.dexplore.entity.MuseumEntity;
@@ -19,7 +21,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -35,7 +36,7 @@ public class MainServiceImpl implements MainService {
     /**
      * museum 등록하기
      * @param requestDto
-     * @return validationFailed, databaseError, idNotFound, success
+     * @return validationFailed, databaseError, duplicatedMuseumName, idNotFound, success
      */
     @Override
     public ResponseEntity<? super SaveMuseumResponseDto> saveMuseum(SaveMuseumRequestDto requestDto) {
@@ -117,6 +118,92 @@ public class MainServiceImpl implements MainService {
 
         return ResponseDto.success();
     }
+
+    /**
+     * 박물관 정보 수정하기
+     * @param requestDto
+     * @return validationFailed, databaseError, idNotFound, success
+     */
+    @Override
+    public ResponseEntity<? super UpdateMuseumResponseDto> updateMuseum(UpdateMuseumRequestDto requestDto) {
+        try {
+
+            //유저 id 확인
+            String userId = "Default User Id...";
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.isAuthenticated()) {
+                userId = authentication.getName();
+                log.info("[saveMuseum]: 추출한 id:{}", userId);
+            }
+
+            boolean exists = userRepository.existsByUserId(userId);
+            if(!exists) {
+                return UpdateMuseumResponseDto.idNotFound();
+            }
+
+            String museumName = requestDto.getMuseumName();
+
+            //박물관 id 존재여부 확인
+            exists = museumRepository.existsByMuseumId(requestDto.getMuseumId());
+            if(!exists) {
+                return UpdateMuseumResponseDto.museumNotFound();
+            }
+
+            MuseumEntity museum = museumRepository.findByMuseumId(requestDto.getMuseumId());
+            LocationEntity location = locationRepository.findByLocationId(museum.getLocationId());
+
+            String entPrice = requestDto.getEntPrice();
+            String museumEmail = requestDto.getMuseumEmail();
+            String startTime = requestDto.getStartTime();
+            String endTime = requestDto.getEndTime();
+            String closingDay = requestDto.getClosingDay();
+            String description = requestDto.getDescription();
+            String phone = requestDto.getPhone();
+
+            BigDecimal latitude = requestDto.getLatitude();
+            BigDecimal longitude = requestDto.getLongitude();
+            String level = requestDto.getLevel();
+            BigDecimal edgeLatitude1 = requestDto.getEdgeLatitude1();
+            BigDecimal edgeLongitude1 = requestDto.getEdgeLongitude1();
+            BigDecimal edgeLatitude2 = requestDto.getEdgeLatitude2();
+            BigDecimal edgeLongitude2 = requestDto.getEdgeLongitude2();
+
+            LocationEntity newLocation = new LocationEntity(
+                    location.getLocationId(),
+                    latitude,
+                    longitude,
+                    level,
+                    edgeLatitude1,
+                    edgeLongitude1,
+                    edgeLatitude2,
+                    edgeLongitude2
+            );
+
+            MuseumEntity newMuseum = new MuseumEntity(
+                    museum.getMuseumId(),
+                    museumName,
+                    userId,
+                    newLocation.getLocationId(),
+                    entPrice,
+                    museumEmail,
+                    startTime,
+                    endTime,
+                    closingDay,
+                    description,
+                    phone
+            );
+
+            locationRepository.save(newLocation);
+            museumRepository.save(newMuseum);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return ResponseDto.success();
+    }
+
 
     /**
      * museum_id로 단일 박물관 찾기

@@ -3,9 +3,11 @@ package info.dexplore.dexplore.controller;
 
 import info.dexplore.dexplore.dto.request.main.GetMuseumRequestDto;
 import info.dexplore.dexplore.dto.request.main.SaveMuseumRequestDto;
+import info.dexplore.dexplore.dto.request.main.UpdateMuseumRequestDto;
 import info.dexplore.dexplore.dto.response.main.GetMuseumListResponseDto;
 import info.dexplore.dexplore.dto.response.main.GetMuseumResponseDto;
 import info.dexplore.dexplore.dto.response.main.SaveMuseumResponseDto;
+import info.dexplore.dexplore.dto.response.main.UpdateMuseumResponseDto;
 import info.dexplore.dexplore.service.MainService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,18 @@ public class AdminController {
     public ResponseEntity<? super SaveMuseumResponseDto> saveMuseum(@RequestBody @Valid SaveMuseumRequestDto requestBody){
         ResponseEntity<? super SaveMuseumResponseDto> response = mainService.saveMuseum(requestBody);
         log.info("[saveMuseum]: {museumName: {}}",  requestBody.getMuseumName());
+        return response;
+    }
+
+    /**
+     * 박물관 정보 수
+     * @param requestBody
+     * @returnvalidationFailed, idNotFound, museumNotFound, databaseError, success
+     */
+    @PostMapping("/update-museum")
+    public ResponseEntity<? super UpdateMuseumResponseDto> updateMuseum(@RequestBody @Valid UpdateMuseumRequestDto requestBody){
+        ResponseEntity<? super UpdateMuseumResponseDto> response = mainService.updateMuseum(requestBody);
+        log.info("[updateMuseum]: {museumName: {}}",  requestBody.getMuseumName());
         return response;
     }
 
