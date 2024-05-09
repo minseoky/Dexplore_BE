@@ -3,6 +3,7 @@ package info.dexplore.dexplore.service;
 import info.dexplore.dexplore.dto.request.main.GetMuseumRequestDto;
 import info.dexplore.dexplore.dto.request.main.SaveMuseumRequestDto;
 import info.dexplore.dexplore.dto.response.ResponseDto;
+import info.dexplore.dexplore.dto.response.main.GetMuseumListResponseDto;
 import info.dexplore.dexplore.dto.response.main.GetMuseumResponseDto;
 import info.dexplore.dexplore.dto.response.main.SaveMuseumResponseDto;
 import info.dexplore.dexplore.entity.LocationEntity;
@@ -15,10 +16,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Slf4j
@@ -148,12 +150,38 @@ public class MainServiceImpl implements MainService {
                 }
             }
 
-
-
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
         return GetMuseumResponseDto.success(museum);
     }
+
+    /**
+     * user_id로 모든 박물관 찾기
+     * @return validationFailed, databaseError, success
+     */
+    @Override
+    public ResponseEntity<? super GetMuseumListResponseDto> getMuseumList() {
+
+        List<MuseumEntity> allByUserId;
+
+        try {
+            String userId = "Default User Id...";
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.isAuthenticated()) {
+                userId = authentication.getName();
+            }
+
+            allByUserId = museumRepository.findAllByUserId(userId);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return GetMuseumListResponseDto.success(allByUserId);
+    }
+
+
 }
