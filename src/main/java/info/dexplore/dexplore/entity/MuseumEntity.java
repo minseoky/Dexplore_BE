@@ -44,4 +44,7 @@ public class MuseumEntity {
     private String description;
 
     private String phone;
+
+    @Column(name = "img_url")
+    private String imgUrl;
 }

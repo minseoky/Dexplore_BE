@@ -12,15 +12,17 @@ public class SignInResponseDto extends ResponseDto {
 
     private String token;
     private int expirationTime;
+    private String role;
 
-    private SignInResponseDto (String token) {
+    private SignInResponseDto (String token, String role) {
         super();
         this.token = token;
         this.expirationTime = 3600;
+        this.role = role;
     }
 
-    public static ResponseEntity<SignInResponseDto> success (String token) {
-        SignInResponseDto responseBody = new SignInResponseDto(token);
+    public static ResponseEntity<SignInResponseDto> success (String token, String role) {
+        SignInResponseDto responseBody = new SignInResponseDto(token, role);
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
