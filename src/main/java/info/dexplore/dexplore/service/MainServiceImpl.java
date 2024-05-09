@@ -1,5 +1,8 @@
 package info.dexplore.dexplore.service;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import info.dexplore.dexplore.dto.request.main.GetMuseumRequestDto;
 import info.dexplore.dexplore.dto.request.main.UpdateMuseumRequestDto;
 import info.dexplore.dexplore.dto.request.main.SaveMuseumRequestDto;
@@ -15,13 +18,16 @@ import info.dexplore.dexplore.repository.MuseumRepository;
 import info.dexplore.dexplore.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.net.URL;
 import java.util.List;
 
 
@@ -29,6 +35,10 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class MainServiceImpl implements MainService {
+
+    private final AmazonS3 amazonS3;
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
     private final MuseumRepository museumRepository;
     private final LocationRepository locationRepository;
@@ -41,7 +51,7 @@ public class MainServiceImpl implements MainService {
      */
     @Override
     @Transactional
-    public ResponseEntity<? super SaveMuseumResponseDto> saveMuseum(SaveMuseumRequestDto requestDto) {
+    public ResponseEntity<? super SaveMuseumResponseDto> saveMuseum(MultipartFile imageFile, SaveMuseumRequestDto requestDto) {
 
         try {
 
@@ -83,6 +93,16 @@ public class MainServiceImpl implements MainService {
             BigDecimal edgeLatitude2 = requestDto.getEdgeLatitude2();
             BigDecimal edgeLongitude2 = requestDto.getEdgeLongitude2();
 
+            //S3 버킷 저장 및 img_url 생성
+            String fileName = userId + museumName + imageFile.getOriginalFilename();
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(imageFile.getSize());
+            metadata.setContentType(imageFile.getContentType());
+
+            amazonS3.putObject(bucket, fileName, imageFile.getInputStream(), metadata);
+
+            String imgUrl = amazonS3.getUrl(bucket, fileName).toString();
+
             LocationEntity location = new LocationEntity(
                     null,
                     latitude,
@@ -108,7 +128,8 @@ public class MainServiceImpl implements MainService {
                     endTime,
                     closingDay,
                     description,
-                    phone
+                    phone,
+                    imgUrl
             );
 
             museumRepository.save(museum);
@@ -128,7 +149,7 @@ public class MainServiceImpl implements MainService {
      */
     @Override
     @Transactional
-    public ResponseEntity<? super UpdateMuseumResponseDto> updateMuseum(UpdateMuseumRequestDto requestDto) {
+    public ResponseEntity<? super UpdateMuseumResponseDto> updateMuseum(MultipartFile imageFile, UpdateMuseumRequestDto requestDto) {
         try {
 
             //유저 id 확인
@@ -163,6 +184,25 @@ public class MainServiceImpl implements MainService {
             String description = requestDto.getDescription();
             String phone = requestDto.getPhone();
 
+            // 해당 imgUrl의 이미지 제거
+            String imgUrl = museum.getImgUrl();
+            URL url = new URL(imgUrl);
+            String[] parts = url.getPath().split("/", 2);
+            String key = parts[1]; // 파일 키(경로) 추출
+
+            // 버킷에서 파일 삭제 TODO delete 오류 수정해야함
+            //amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
+
+            //S3 버킷 저장 및 새 img_url 생성
+            String fileName = userId + museumName + imageFile.getOriginalFilename();
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(imageFile.getSize());
+            metadata.setContentType(imageFile.getContentType());
+
+            amazonS3.putObject(bucket, fileName, imageFile.getInputStream(), metadata);
+
+            String newImgUrl = amazonS3.getUrl(bucket, fileName).toString();
+
             BigDecimal latitude = requestDto.getLatitude();
             BigDecimal longitude = requestDto.getLongitude();
             String level = requestDto.getLevel();
@@ -193,7 +233,8 @@ public class MainServiceImpl implements MainService {
                     endTime,
                     closingDay,
                     description,
-                    phone
+                    phone,
+                    newImgUrl
             );
 
             locationRepository.save(newLocation);

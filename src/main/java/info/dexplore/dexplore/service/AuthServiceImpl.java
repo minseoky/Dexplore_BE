@@ -169,6 +169,7 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public ResponseEntity<? super SignInResponseDto> signIn(SignInRequestDto requestDto) {
         String token = null;
+        String role = "ROLE_ANONYMOUS";
 
         try {
 
@@ -183,12 +184,14 @@ public class AuthServiceImpl implements AuthService{
 
             token = jwtProvider.create(userId);
 
+            role = userRepository.findByUserId(userId).getRole();
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
 
-        return SignInResponseDto.success(token);
+        return SignInResponseDto.success(token, role);
     }
 
 

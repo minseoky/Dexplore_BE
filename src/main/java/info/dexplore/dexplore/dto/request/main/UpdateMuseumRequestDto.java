@@ -43,6 +43,7 @@ public class UpdateMuseumRequestDto {
     @NotBlank
     private String phone;
 
+
     //이하 공간정보
 
     @NotNull

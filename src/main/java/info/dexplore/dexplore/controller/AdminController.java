@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Slf4j
@@ -29,20 +30,21 @@ public class AdminController {
      * @return validationFailed, idNotFound, duplicatedMuseumName, databaseError, success
      */
     @PostMapping("/save-museum")
-    public ResponseEntity<? super SaveMuseumResponseDto> saveMuseum(@RequestBody @Valid SaveMuseumRequestDto requestBody){
-        ResponseEntity<? super SaveMuseumResponseDto> response = mainService.saveMuseum(requestBody);
-        log.info("[saveMuseum]: {museumName: {}}",  requestBody.getMuseumName());
+    public ResponseEntity<? super SaveMuseumResponseDto> saveMuseum(@RequestParam("imageFile") MultipartFile imageFile,
+                                                                    @ModelAttribute @Valid SaveMuseumRequestDto requestDto){
+        ResponseEntity<? super SaveMuseumResponseDto> response = mainService.saveMuseum(imageFile, requestDto);
+        log.info("[saveMuseum]: {museumName: {}}",  requestDto.getMuseumName());
         return response;
     }
 
     /**
      * 박물관 정보 수
-     * @param requestBody
      * @returnvalidationFailed, idNotFound, museumNotFound, databaseError, success
      */
     @PostMapping("/update-museum")
-    public ResponseEntity<? super UpdateMuseumResponseDto> updateMuseum(@RequestBody @Valid UpdateMuseumRequestDto requestBody){
-        ResponseEntity<? super UpdateMuseumResponseDto> response = mainService.updateMuseum(requestBody);
+    public ResponseEntity<? super UpdateMuseumResponseDto> updateMuseum(@RequestParam("imageFile") MultipartFile imageFile,
+                                                                        @ModelAttribute @Valid UpdateMuseumRequestDto requestBody){
+        ResponseEntity<? super UpdateMuseumResponseDto> response = mainService.updateMuseum(imageFile, requestBody);
         log.info("[updateMuseum]: {museumName: {}}",  requestBody.getMuseumName());
         return response;
     }
