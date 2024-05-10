@@ -191,7 +191,7 @@ public class MainServiceImpl implements MainService {
             String key = parts[1]; // 파일 키(경로) 추출
 
             // 버킷에서 파일 삭제 TODO delete 오류 수정해야함
-            //amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
+            amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
 
             //S3 버킷 저장 및 새 img_url 생성
             String fileName = userId + museumName + imageFile.getOriginalFilename();
