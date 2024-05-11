@@ -1,4 +1,4 @@
-package info.dexplore.dexplore.dto.request.main;
+package info.dexplore.dexplore.dto.request.main.admin;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

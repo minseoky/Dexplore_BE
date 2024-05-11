@@ -3,12 +3,14 @@ package info.dexplore.dexplore.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import info.dexplore.dexplore.dto.request.main.GetMuseumRequestDto;
-import info.dexplore.dexplore.dto.request.main.SaveArtRequestDto;
-import info.dexplore.dexplore.dto.request.main.UpdateMuseumRequestDto;
-import info.dexplore.dexplore.dto.request.main.SaveMuseumRequestDto;
+import info.dexplore.dexplore.dto.request.main.admin.GetMuseumRequestDto;
+import info.dexplore.dexplore.dto.request.main.admin.SaveArtRequestDto;
+import info.dexplore.dexplore.dto.request.main.admin.UpdateMuseumRequestDto;
+import info.dexplore.dexplore.dto.request.main.admin.SaveMuseumRequestDto;
+import info.dexplore.dexplore.dto.request.main.user.GetNearestMuseumRequestDto;
 import info.dexplore.dexplore.dto.response.ResponseDto;
-import info.dexplore.dexplore.dto.response.main.*;
+import info.dexplore.dexplore.dto.response.main.admin.*;
+import info.dexplore.dexplore.dto.response.main.user.GetNearestMuseumResponseDto;
 import info.dexplore.dexplore.entity.ArtEntity;
 import info.dexplore.dexplore.entity.LocationEntity;
 import info.dexplore.dexplore.entity.MuseumEntity;
@@ -397,6 +399,30 @@ public class MainServiceImpl implements MainService {
 
         return ResponseDto.success();
     }
+
+    /**
+     * 사용자 위치에서 가장 가까운 박물관 반환
+     * @return validationFailed, databaseError, success
+     */
+    @Override
+    public ResponseEntity<? super GetNearestMuseumResponseDto> getNearestMuseum(GetNearestMuseumRequestDto requestDto) {
+
+        try {
+
+            // 유저 현재 위치 추출
+            BigDecimal userLatitude = requestDto.getLatitude();
+            BigDecimal userLongitude = requestDto.getLongitude();
+
+            // TODO 가장 가까운 박물관 반환
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return null;
+    }
+
 
     /**
      * 요청자의 JWT에서 userId 추출
