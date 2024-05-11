@@ -4,15 +4,17 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import info.dexplore.dexplore.dto.request.main.GetMuseumRequestDto;
+import info.dexplore.dexplore.dto.request.main.SaveArtRequestDto;
 import info.dexplore.dexplore.dto.request.main.UpdateMuseumRequestDto;
 import info.dexplore.dexplore.dto.request.main.SaveMuseumRequestDto;
 import info.dexplore.dexplore.dto.response.ResponseDto;
-import info.dexplore.dexplore.dto.response.main.GetMuseumListResponseDto;
-import info.dexplore.dexplore.dto.response.main.GetMuseumResponseDto;
-import info.dexplore.dexplore.dto.response.main.UpdateMuseumResponseDto;
-import info.dexplore.dexplore.dto.response.main.SaveMuseumResponseDto;
+import info.dexplore.dexplore.dto.response.main.*;
+import info.dexplore.dexplore.entity.ArtEntity;
 import info.dexplore.dexplore.entity.LocationEntity;
 import info.dexplore.dexplore.entity.MuseumEntity;
+import info.dexplore.dexplore.provider.QrcodeProvider;
+import info.dexplore.dexplore.provider.TtsProvider;
+import info.dexplore.dexplore.repository.ArtRepository;
 import info.dexplore.dexplore.repository.LocationRepository;
 import info.dexplore.dexplore.repository.MuseumRepository;
 import info.dexplore.dexplore.repository.UserRepository;
@@ -43,6 +45,10 @@ public class MainServiceImpl implements MainService {
     private final MuseumRepository museumRepository;
     private final LocationRepository locationRepository;
     private final UserRepository userRepository;
+    private final ArtRepository artRepository;
+
+    private final QrcodeProvider qrcodeProvider;
+    private final TtsProvider ttsProvider;
 
     /**
      * museum 등록하기
@@ -56,12 +62,9 @@ public class MainServiceImpl implements MainService {
         try {
 
             //유저 id 확인
-            String userId = "Default User Id...";
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication != null && authentication.isAuthenticated()) {
-                userId = authentication.getName();
-                log.info("[saveMuseum]: 추출한 id:{}", userId);
-            }
+            String userId = findUserIdFromJwt();
+            log.info("[saveMuseum]: 추출한 id:{}", userId);
+
 
             boolean exists = userRepository.existsByUserId(userId);
             if(!exists) {
@@ -153,12 +156,8 @@ public class MainServiceImpl implements MainService {
         try {
 
             //유저 id 확인
-            String userId = "Default User Id...";
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication != null && authentication.isAuthenticated()) {
-                userId = authentication.getName();
-                log.info("[saveMuseum]: 추출한 id:{}", userId);
-            }
+            String userId = findUserIdFromJwt();
+            log.info("[saveMuseum]: 추출한 id:{}", userId);
 
             boolean exists = userRepository.existsByUserId(userId);
             if(!exists) {
@@ -190,7 +189,7 @@ public class MainServiceImpl implements MainService {
             String[] parts = url.getPath().split("/", 2);
             String key = parts[1]; // 파일 키(경로) 추출
 
-            // 버킷에서 파일 삭제 TODO delete 오류 수정해야함
+            // 버킷에서 파일 삭제
             amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
 
             //S3 버킷 저장 및 새 img_url 생성
@@ -314,5 +313,102 @@ public class MainServiceImpl implements MainService {
         return GetMuseumListResponseDto.success(allByUserId);
     }
 
+
+    /**
+     * museum_id의 박물관에 작품정보 등록
+     * @return validationFailed, databaseError, idNotFound, museumNotFound, success
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<? super SaveArtResponseDto> saveArt(MultipartFile imageFile, SaveArtRequestDto requestDto) {
+
+        try {
+            String userId = findUserIdFromJwt();
+
+            boolean exists = userRepository.existsByUserId(userId);
+            if(!exists) {
+                return SaveArtResponseDto.idNotFound();
+            }
+
+            Long museumId = requestDto.getMuseumId();
+            exists = museumRepository.existsByMuseumId(museumId);
+            if(!exists) {
+                return SaveArtResponseDto.museumNotFound();
+            }
+
+            //미술품의 location 정보 생성
+            BigDecimal latitude = requestDto.getLatitude();
+            BigDecimal longitude = requestDto.getLongitude();
+            String level = requestDto.getLevel();
+            BigDecimal edgeLatitude1 = requestDto.getEdgeLatitude1();
+            BigDecimal edgeLongitude1 = requestDto.getEdgeLongitude1();
+            BigDecimal edgeLatitude2 = requestDto.getEdgeLatitude2();
+            BigDecimal edgeLongitude2 = requestDto.getEdgeLongitude2();
+
+            LocationEntity location = new LocationEntity(
+                    null,
+                    latitude,
+                    longitude,
+                    level,
+                    edgeLatitude1,
+                    edgeLongitude1,
+                    edgeLatitude2,
+                    edgeLongitude2
+            );
+
+            locationRepository.save(location);
+            Long locationId = location.getLocationId();
+
+            String artName = requestDto.getArtName();
+            String artDescription = requestDto.getArtDescription();
+            String artYear = requestDto.getArtYear();
+            String authName = requestDto.getAuthName();
+
+            //S3 버킷 저장 및 img_url 생성
+            String fileName = userId + artName + imageFile.getOriginalFilename();
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(imageFile.getSize());
+            metadata.setContentType(imageFile.getContentType());
+
+            amazonS3.putObject(bucket, fileName, imageFile.getInputStream(), metadata);
+
+            String imgUrl = amazonS3.getUrl(bucket, fileName).toString();
+            Long qrcodeId = qrcodeProvider.generateQrcode();
+            Long ttsId = ttsProvider.generateTts(artDescription);
+            ArtEntity art = new ArtEntity(
+                    null,
+                    museumId,
+                    locationId,
+                    qrcodeId,
+                    ttsId,
+                    artName,
+                    artDescription,
+                    artYear,
+                    authName,
+                    imgUrl
+            );
+
+            artRepository.save(art);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return ResponseDto.success();
+    }
+
+    /**
+     * 요청자의 JWT에서 userId 추출
+     * @return 요청자의 userId
+     */
+    private String findUserIdFromJwt() {
+        String userId = "Default user id...";
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            userId = authentication.getName();
+        }
+        return userId;
+    }
 
 }
