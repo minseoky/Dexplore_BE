@@ -1,7 +1,5 @@
-package info.dexplore.dexplore.dto.response.main;
+package info.dexplore.dexplore.dto.response.main.admin;
 
-import info.dexplore.dexplore.common.ResponseCode;
-import info.dexplore.dexplore.common.ResponseMessage;
 import info.dexplore.dexplore.dto.response.ResponseDto;
 import info.dexplore.dexplore.entity.MuseumEntity;
 import lombok.Getter;

@@ -1,11 +1,11 @@
 package info.dexplore.dexplore.controller;
 
 
-import info.dexplore.dexplore.dto.request.main.GetMuseumRequestDto;
-import info.dexplore.dexplore.dto.request.main.SaveArtRequestDto;
-import info.dexplore.dexplore.dto.request.main.SaveMuseumRequestDto;
-import info.dexplore.dexplore.dto.request.main.UpdateMuseumRequestDto;
-import info.dexplore.dexplore.dto.response.main.*;
+import info.dexplore.dexplore.dto.request.main.admin.GetMuseumRequestDto;
+import info.dexplore.dexplore.dto.request.main.admin.SaveArtRequestDto;
+import info.dexplore.dexplore.dto.request.main.admin.SaveMuseumRequestDto;
+import info.dexplore.dexplore.dto.request.main.admin.UpdateMuseumRequestDto;
+import info.dexplore.dexplore.dto.response.main.admin.*;
 import info.dexplore.dexplore.service.MainService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

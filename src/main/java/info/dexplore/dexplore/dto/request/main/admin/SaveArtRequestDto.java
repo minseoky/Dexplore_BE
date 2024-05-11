@@ -1,9 +1,7 @@
-package info.dexplore.dexplore.dto.request.main;
+package info.dexplore.dexplore.dto.request.main.admin;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,36 +11,22 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UpdateMuseumRequestDto {
+public class SaveArtRequestDto {
 
     @NotNull
     private Long museumId;
 
     @NotBlank
-    private String museumName;
+    private String artName;
 
     @NotBlank
-    private String entPrice;
+    private String artDescription;
 
     @NotBlank
-    @Email
-    private String museumEmail;
+    private String artYear;
 
     @NotBlank
-    private String startTime;
-
-    @NotBlank
-    private String endTime;
-
-    @NotBlank
-    private String closingDay;
-
-    @Size(max = 2000, message = "2000자 제한")
-    private String description;
-
-    @NotBlank
-    private String phone;
-
+    private String authName;
 
     //이하 공간정보
 
@@ -59,5 +43,4 @@ public class UpdateMuseumRequestDto {
     private BigDecimal edgeLongitude1;
     private BigDecimal edgeLatitude2;
     private BigDecimal edgeLongitude2;
-
 }
