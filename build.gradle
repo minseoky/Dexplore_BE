@@ -38,6 +38,8 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 	implementation 'commons-io:commons-io:2.11.0'
+	implementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'com.google.cloud:google-cloud-texttospeech:2.39.0'
 }
 
 tasks.named('test') {
