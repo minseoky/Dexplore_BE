@@ -373,7 +373,7 @@ public class MainServiceImpl implements MainService {
             amazonS3.putObject(bucket, fileName, imageFile.getInputStream(), metadata);
 
             String imgUrl = amazonS3.getUrl(bucket, fileName).toString();
-            Long qrcodeId = qrcodeProvider.generateQrcode();
+            Long qrcodeId = qrcodeProvider.generateQrcode(artName);
             Long ttsId = ttsProvider.generateTts(artDescription);
             ArtEntity art = new ArtEntity(
                     null,
