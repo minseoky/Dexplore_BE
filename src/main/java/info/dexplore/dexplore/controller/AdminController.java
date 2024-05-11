@@ -2,12 +2,10 @@ package info.dexplore.dexplore.controller;
 
 
 import info.dexplore.dexplore.dto.request.main.GetMuseumRequestDto;
+import info.dexplore.dexplore.dto.request.main.SaveArtRequestDto;
 import info.dexplore.dexplore.dto.request.main.SaveMuseumRequestDto;
 import info.dexplore.dexplore.dto.request.main.UpdateMuseumRequestDto;
-import info.dexplore.dexplore.dto.response.main.GetMuseumListResponseDto;
-import info.dexplore.dexplore.dto.response.main.GetMuseumResponseDto;
-import info.dexplore.dexplore.dto.response.main.SaveMuseumResponseDto;
-import info.dexplore.dexplore.dto.response.main.UpdateMuseumResponseDto;
+import info.dexplore.dexplore.dto.response.main.*;
 import info.dexplore.dexplore.service.MainService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +36,7 @@ public class AdminController {
     }
 
     /**
-     * 박물관 정보 수
+     * 박물관 정보 수정
      * @returnvalidationFailed, idNotFound, museumNotFound, databaseError, success
      */
     @PostMapping("/update-museum")
@@ -68,6 +66,14 @@ public class AdminController {
     public ResponseEntity<? super GetMuseumListResponseDto> getMuseums() {
         ResponseEntity<? super GetMuseumListResponseDto> response = mainService.getMuseumList();
         log.info("[getMuseums]");
+        return response;
+    }
+
+    @PostMapping("/save_art")
+    public ResponseEntity<? super SaveArtResponseDto> saveArt(@RequestParam("imageFile") MultipartFile imageFile,
+                                                              @ModelAttribute @Valid SaveArtRequestDto requestBody) {
+        ResponseEntity<? super SaveArtResponseDto> response = mainService.saveArt(imageFile, requestBody);
+        log.info("[saveArt]");
         return response;
     }
 
