@@ -14,4 +14,6 @@ public interface MuseumRepository extends JpaRepository<MuseumEntity, String> {
     MuseumEntity findByMuseumId(Long museumId);
 
     List<MuseumEntity> findAllByUserId(String UserId);
+
+    MuseumEntity findFirstByLocationId(Long locationId);
 }

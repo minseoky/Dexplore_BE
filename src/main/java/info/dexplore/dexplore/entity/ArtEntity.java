@@ -19,8 +19,8 @@ public class ArtEntity {
     @Column(name = "museum_id")
     private Long museumId;
 
-    @Column(name = "location_id")
-    private Long locationId;
+    @Column(name = "spot_id")
+    private Long spotId;
 
     @Column(name = "qrcode_id")
     private Long qrcodeId;

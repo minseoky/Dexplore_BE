@@ -14,15 +14,16 @@ import info.dexplore.dexplore.dto.response.main.user.GetNearestMuseumResponseDto
 import info.dexplore.dexplore.entity.ArtEntity;
 import info.dexplore.dexplore.entity.LocationEntity;
 import info.dexplore.dexplore.entity.MuseumEntity;
+import info.dexplore.dexplore.entity.SpotEntity;
 import info.dexplore.dexplore.provider.QrcodeProvider;
 import info.dexplore.dexplore.provider.TtsProvider;
-import info.dexplore.dexplore.repository.ArtRepository;
-import info.dexplore.dexplore.repository.LocationRepository;
-import info.dexplore.dexplore.repository.MuseumRepository;
-import info.dexplore.dexplore.repository.UserRepository;
+import info.dexplore.dexplore.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.geo.Metrics;
+import org.springframework.data.geo.Point;
+import org.springframework.data.geo.Distance;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,7 +32,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.net.URL;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -40,6 +43,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MainServiceImpl implements MainService {
 
+    private static final double EARTH_RADIUS = 6371.0;
     private final AmazonS3 amazonS3;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -48,6 +52,7 @@ public class MainServiceImpl implements MainService {
     private final LocationRepository locationRepository;
     private final UserRepository userRepository;
     private final ArtRepository artRepository;
+    private final SpotRepository spotRepository;
 
     private final QrcodeProvider qrcodeProvider;
     private final TtsProvider ttsProvider;
@@ -338,7 +343,7 @@ public class MainServiceImpl implements MainService {
                 return SaveArtResponseDto.museumNotFound();
             }
 
-            //미술품의 location 정보 생성
+            //미술품의 spot 정보 생성
             BigDecimal latitude = requestDto.getLatitude();
             BigDecimal longitude = requestDto.getLongitude();
             String level = requestDto.getLevel();
@@ -347,7 +352,7 @@ public class MainServiceImpl implements MainService {
             BigDecimal edgeLatitude2 = requestDto.getEdgeLatitude2();
             BigDecimal edgeLongitude2 = requestDto.getEdgeLongitude2();
 
-            LocationEntity location = new LocationEntity(
+            SpotEntity spot = new SpotEntity(
                     null,
                     latitude,
                     longitude,
@@ -358,8 +363,8 @@ public class MainServiceImpl implements MainService {
                     edgeLongitude2
             );
 
-            locationRepository.save(location);
-            Long locationId = location.getLocationId();
+            spotRepository.save(spot);
+            Long spotId = spot.getSpotId();
 
             String artName = requestDto.getArtName();
             String artDescription = requestDto.getArtDescription();
@@ -380,7 +385,7 @@ public class MainServiceImpl implements MainService {
             ArtEntity art = new ArtEntity(
                     null,
                     museumId,
-                    locationId,
+                    spotId,
                     qrcodeId,
                     ttsId,
                     artName,
@@ -402,10 +407,13 @@ public class MainServiceImpl implements MainService {
 
     /**
      * 사용자 위치에서 가장 가까운 박물관 반환
-     * @return validationFailed, databaseError, success
+     * @return validationFailed, databaseError, museumNotFound, success
      */
     @Override
+    @Transactional
     public ResponseEntity<? super GetNearestMuseumResponseDto> getNearestMuseum(GetNearestMuseumRequestDto requestDto) {
+
+        MuseumEntity nearestMuseum;
 
         try {
 
@@ -413,14 +421,40 @@ public class MainServiceImpl implements MainService {
             BigDecimal userLatitude = requestDto.getLatitude();
             BigDecimal userLongitude = requestDto.getLongitude();
 
-            // TODO 가장 가까운 박물관 반환
+            // 박물관 위치 정보 조회
+            List<LocationEntity> museumLocations = locationRepository.findAll();
+
+
+            // 가장 가까운 박물관 찾기
+            BigDecimal minDistance = null;
+            Long nearestLocationId = null;
+
+            for (LocationEntity location : museumLocations) {
+                BigDecimal distance = calculateDistance(
+                        userLatitude, userLongitude,
+                        location.getLatitude(), location.getLongitude()
+                );
+
+                // 최소 거리 갱신
+                if (minDistance == null || distance.compareTo(minDistance) < 0) {
+                    minDistance = distance;
+                    nearestLocationId = location.getLocationId();
+                }
+            }
+
+            nearestMuseum = museumRepository.findFirstByLocationId(nearestLocationId);
+
 
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
 
-        return null;
+        if(nearestMuseum == null) {
+            return GetNearestMuseumResponseDto.museumNotFound();
+        }
+
+        return GetNearestMuseumResponseDto.success(nearestMuseum);
     }
 
 
@@ -435,6 +469,20 @@ public class MainServiceImpl implements MainService {
             userId = authentication.getName();
         }
         return userId;
+    }
+
+    private BigDecimal calculateDistance(BigDecimal latitude1, BigDecimal longitude1,
+                                         BigDecimal latitude2, BigDecimal longitude2) {
+        double lat1Rad = Math.toRadians(latitude1.doubleValue());
+        double lat2Rad = Math.toRadians(latitude2.doubleValue());
+        double lon1Rad = Math.toRadians(longitude1.doubleValue());
+        double lon2Rad = Math.toRadians(longitude2.doubleValue());
+
+        double x = (lon2Rad - lon1Rad) * Math.cos((lat1Rad + lat2Rad) / 2);
+        double y = (lat2Rad - lat1Rad);
+        double distance = Math.sqrt(x * x + y * y) * EARTH_RADIUS;
+
+        return BigDecimal.valueOf(distance);
     }
 
 }
