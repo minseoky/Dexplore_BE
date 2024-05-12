@@ -4,4 +4,5 @@ import info.dexplore.dexplore.entity.QrcodeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface QrcodeRepository extends JpaRepository<QrcodeEntity, String> {
+    QrcodeEntity findByQrcodeHashkey(String qrcodeHashKey);
 }
