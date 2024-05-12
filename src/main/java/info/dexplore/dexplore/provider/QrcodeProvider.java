@@ -1,8 +1,11 @@
 package info.dexplore.dexplore.provider;
 
+import info.dexplore.dexplore.entity.QrcodeEntity;
 import info.dexplore.dexplore.repository.QrcodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -15,7 +18,28 @@ public class QrcodeProvider {
      * @return DB에 저장한 qr코드의 id 반환
      */
     public Long generateQrcode(String artName) {
+        String hashKey = createHashKey(artName);
 
-        return null;
+        QrcodeEntity qrcodeEntity = new QrcodeEntity(null, artName, hashKey);
+        qrcodeRepository.save(qrcodeEntity);
+        return qrcodeEntity.getQrcodeId();
     }
+
+    /**
+     * UUID를 이용하여 해시 값을 생성하는 메서드
+     * @param input 입력 문자열
+     * @return 생성된 해시 값
+     */
+    public String createHashKey(String input) {
+        // UUID 생성
+        UUID uuid = UUID.randomUUID();
+
+        // UUID -> String
+        String uuidString = uuid.toString();
+
+        //input+uuid
+        String hashKey = input + uuidString;
+        return hashKey;
+    }
+
 }
