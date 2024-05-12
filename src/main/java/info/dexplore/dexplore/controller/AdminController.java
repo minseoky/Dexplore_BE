@@ -52,7 +52,7 @@ public class AdminController {
      * @return validationFailed, museumNotFound, IdNotMatching, databaseError, success
      */
     @GetMapping("/get-museum")
-    public ResponseEntity<? super GetMuseumResponseDto> getMuseum(@RequestBody @Valid GetMuseumRequestDto requestBody) {
+    public ResponseEntity<? super GetMuseumResponseDto> getMuseum(@ModelAttribute @Valid GetMuseumRequestDto requestBody) {
         ResponseEntity<? super GetMuseumResponseDto> response = mainService.getMuseum(requestBody);
         log.info("[getMuseum]: {museumId: {}}", requestBody.getMuseumId());
         return response;
