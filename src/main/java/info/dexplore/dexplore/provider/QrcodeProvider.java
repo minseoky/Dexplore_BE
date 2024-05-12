@@ -5,8 +5,7 @@ import info.dexplore.dexplore.repository.QrcodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -22,28 +21,25 @@ public class QrcodeProvider {
         String hashKey = createHashKey(artName);
 
         QrcodeEntity qrcodeEntity = new QrcodeEntity(null, artName, hashKey);
-
-        QrcodeEntity savedQrcode = qrcodeRepository.save(qrcodeEntity);
-        return savedQrcode.getQrcodeId();
+        qrcodeRepository.save(qrcodeEntity);
+        return qrcodeEntity.getQrcodeId();
     }
 
-    //해시값 생성함수
+    /**
+     * UUID를 이용하여 해시 값을 생성하는 메서드
+     * @param input 입력 문자열
+     * @return 생성된 해시 값
+     */
     public String createHashKey(String input) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(input.getBytes());
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            // 예외 처리 필요
-            return null;
-        }
+        // UUID 생성
+        UUID uuid = UUID.randomUUID();
+
+        // UUID -> String
+        String uuidString = uuid.toString();
+
+        //input+uuid
+        String hashKey = input + uuidString;
+        return hashKey;
     }
 
 }
