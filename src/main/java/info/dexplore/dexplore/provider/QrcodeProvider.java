@@ -18,12 +18,7 @@ public class QrcodeProvider {
      * 유일성 보장되는 qr코드 hash를 통해 생성하여 DB에 삽입(QrcodeEntity 이용) 후 해당 qr코드 id 반환, qrcodeName에는 artName과 같은 값 삽입
      * @return DB에 저장한 qr코드의 id 반환
      */
-    public Long generateQrcode(String qrcodeHashkey) {
-        return qrcodeRepository.findByQrcodeHashkey(qrcodeHashkey).getQrcodeId();
-    }
-
-    //artName을 바탕으로 QRCodeEntity의 요소를을 지정하고 저장
-    public Long generateQrHash(String artName) {
+    public Long generateQrcode(String artName) {
         String hashKey = createHashKey(artName);
 
         QrcodeEntity qrcodeEntity = new QrcodeEntity(null, artName, hashKey);
