@@ -1,6 +1,7 @@
 package info.dexplore.dexplore.dto.request.main.admin;
 
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class GetMuseumRequestDto {
 
+    @NotNull
     private Long museumId;
 
 }
