@@ -69,7 +69,7 @@ public class AdminController {
         return response;
     }
 
-    @PostMapping("/save_art")
+    @PostMapping("/save-art")
     public ResponseEntity<? super SaveArtResponseDto> saveArt(@RequestParam("imageFile") MultipartFile imageFile,
                                                               @ModelAttribute @Valid SaveArtRequestDto requestBody) {
         ResponseEntity<? super SaveArtResponseDto> response = mainService.saveArt(imageFile, requestBody);
