@@ -263,7 +263,7 @@ public class MainServiceImpl implements MainService {
             //유저 id 확인
             String userId = findUserIdFromJwt();
 
-            if(userId != museum.getUserId()) {
+            if(!userId.equals(museum.getUserId())) {
                 return DeleteMuseumResponseDto.idNotMatching();
             }
 
@@ -283,24 +283,26 @@ public class MainServiceImpl implements MainService {
                 Long ttsId = artEntity.getTtsId();
                 String ttsUrl = ttsRepository.findByTtsId(ttsId).getBucketUrl();
 
+                // art 이미지 S3 버킷에서 삭제(iter)
+                String imgUrl = artEntity.getImgUrl();
+                URL url = new URL(imgUrl);
+                String[] parts = url.getPath().split("/", 2);
+                String key = parts[1]; // 파일 키(경로) 추출
+                amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
+                artRepository.deleteByArtId(artId);
+
                 qrcodeRepository.deleteByQrcodeId(qrcodeId);
                 spotRepository.deleteBySpotId(spotId);
                 // 버킷에서 음성파일 삭제
                 ttsProvider.deleteTts(ttsUrl);
                 ttsRepository.deleteByTtsId(ttsId);
 
-                // art 이미지 S3 버킷에서 삭제(iter)
-                String imgUrl = artEntity.getImgUrl();
-                URL url = new URL(imgUrl);
-                String[] parts = url.getPath().split("/", 2);
-                String key = parts[1]; // 파일 키(경로) 추출
 
-                // 버킷에서 파일 삭제
-                amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
-
-                artRepository.deleteByArtId(artId);
 
             }
+
+            // 박물관 삭제
+            museumRepository.deleteByMuseumId(museumId);
             // 박물관 location 정보 삭제
             Long locationId = museum.getLocationId();
 
