@@ -15,6 +15,7 @@ import com.google.cloud.texttospeech.v1.*;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 
@@ -140,5 +141,15 @@ public class TtsProvider {
 
         }
 
+    }
+
+    public void deleteTts(String ttsUrl) throws MalformedURLException {
+        // 해당 ttsUrl tts 제거
+        URL url = new URL(ttsUrl);
+        String[] parts = url.getPath().split("/", 2);
+        String key = parts[1]; // 파일 키(경로) 추출
+
+        // 버킷에서 파일 삭제
+        amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
     }
 }

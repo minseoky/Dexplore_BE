@@ -7,4 +7,6 @@ public interface TtsRepository extends JpaRepository<TtsEntity, String> {
 
     TtsEntity findByTtsId(Long ttsId);
 
+    void deleteByTtsId(Long ttsId);
+
 }

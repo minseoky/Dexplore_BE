@@ -45,6 +45,8 @@ public class MainServiceImpl implements MainService {
     private final UserRepository userRepository;
     private final ArtRepository artRepository;
     private final SpotRepository spotRepository;
+    private final QrcodeRepository qrcodeRepository;
+    private final TtsRepository ttsRepository;
 
     private final QrcodeProvider qrcodeProvider;
     private final TtsProvider ttsProvider;
@@ -235,6 +237,83 @@ public class MainServiceImpl implements MainService {
 
             locationRepository.save(newLocation);
             museumRepository.save(newMuseum);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return ResponseDto.success();
+    }
+
+    /**
+     * 박물관과 포함된 모든 작품정보 삭제
+     * @return validationFailed, databaseError, museumNotFound, idNotMatching, success
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<? super DeleteMuseumResponseDto> deleteMuseum(DeleteMuseumRequestDto requestDto) {
+
+        try {
+
+            Long museumId = requestDto.getMuseumId();
+
+            MuseumEntity museum = museumRepository.findByMuseumId(museumId);
+
+            //유저 id 확인
+            String userId = findUserIdFromJwt();
+
+            if(userId != museum.getUserId()) {
+                return DeleteMuseumResponseDto.idNotMatching();
+            }
+
+            boolean exists = museumRepository.existsByMuseumId(museumId);
+            if(!exists) {
+                return DeleteMuseumResponseDto.museumNotFound();
+            }
+
+
+            List<ArtEntity> artEntities = artRepository.findArtEntitiesByMuseumId(museumId);
+
+            for (ArtEntity artEntity : artEntities) {
+                Long artId = artEntity.getArtId();
+                // spot qr tts 삭제
+                Long qrcodeId = artEntity.getQrcodeId();
+                Long spotId = artEntity.getSpotId();
+                Long ttsId = artEntity.getTtsId();
+                String ttsUrl = ttsRepository.findByTtsId(ttsId).getBucketUrl();
+
+                qrcodeRepository.deleteByQrcodeId(qrcodeId);
+                spotRepository.deleteBySpotId(spotId);
+                // 버킷에서 음성파일 삭제
+                ttsProvider.deleteTts(ttsUrl);
+                ttsRepository.deleteByTtsId(ttsId);
+
+                // art 이미지 S3 버킷에서 삭제(iter)
+                String imgUrl = artEntity.getImgUrl();
+                URL url = new URL(imgUrl);
+                String[] parts = url.getPath().split("/", 2);
+                String key = parts[1]; // 파일 키(경로) 추출
+
+                // 버킷에서 파일 삭제
+                amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
+
+                artRepository.deleteByArtId(artId);
+
+            }
+            // 박물관 location 정보 삭제
+            Long locationId = museum.getLocationId();
+
+            // 박물관 이미지 S3 버킷에서 삭제
+            String imgUrl = museum.getImgUrl();
+            URL url = new URL(imgUrl);
+            String[] parts = url.getPath().split("/", 2);
+            String key = parts[1]; // 파일 키(경로) 추출
+            amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
+
+            locationRepository.deleteByLocationId(locationId);
+
+
 
         } catch (Exception e) {
             e.printStackTrace();
