@@ -1,9 +1,11 @@
 package info.dexplore.dexplore.service;
 
 import info.dexplore.dexplore.dto.request.main.admin.*;
+import info.dexplore.dexplore.dto.request.main.user.GetArtRequestDto;
 import info.dexplore.dexplore.dto.request.main.user.GetNearestMuseumRequestDto;
 import info.dexplore.dexplore.dto.request.main.user.GetNearestNArtsRequestDto;
 import info.dexplore.dexplore.dto.response.main.admin.*;
+import info.dexplore.dexplore.dto.response.main.user.GetArtResponseDto;
 import info.dexplore.dexplore.dto.response.main.user.GetNearestMuseumResponseDto;
 import info.dexplore.dexplore.dto.response.main.user.GetNearestNArtsResponseDto;
 import org.springframework.http.ResponseEntity;
@@ -22,5 +24,6 @@ public interface MainService {
     ResponseEntity<? super GetArtsResponseDto> getArtList(GetArtsRequestDto requestDto);
     //--이하 user--
     ResponseEntity<? super GetNearestMuseumResponseDto> getNearestMuseum(GetNearestMuseumRequestDto requestDto);
-    ResponseEntity<? super GetNearestNArtsResponseDto> getNearestNArts(GetNearestNArtsRequestDto requestDto);
+    ResponseEntity<? super GetNearestNArtsResponseDto> getNearestNArtList(GetNearestNArtsRequestDto requestDto);
+    ResponseEntity<? super GetArtResponseDto> getArt(GetArtRequestDto requestDto);
 }

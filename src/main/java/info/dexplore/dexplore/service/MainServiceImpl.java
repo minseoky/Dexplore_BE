@@ -4,10 +4,12 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import info.dexplore.dexplore.dto.request.main.admin.*;
+import info.dexplore.dexplore.dto.request.main.user.GetArtRequestDto;
 import info.dexplore.dexplore.dto.request.main.user.GetNearestMuseumRequestDto;
 import info.dexplore.dexplore.dto.request.main.user.GetNearestNArtsRequestDto;
 import info.dexplore.dexplore.dto.response.ResponseDto;
 import info.dexplore.dexplore.dto.response.main.admin.*;
+import info.dexplore.dexplore.dto.response.main.user.GetArtResponseDto;
 import info.dexplore.dexplore.dto.response.main.user.GetNearestMuseumResponseDto;
 import info.dexplore.dexplore.dto.response.main.user.GetNearestNArtsResponseDto;
 import info.dexplore.dexplore.entity.ArtEntity;
@@ -728,7 +730,7 @@ public class MainServiceImpl implements MainService {
      */
     @Override
     @Transactional
-    public ResponseEntity<? super GetNearestNArtsResponseDto> getNearestNArts(GetNearestNArtsRequestDto requestDto) {
+    public ResponseEntity<? super GetNearestNArtsResponseDto> getNearestNArtList(GetNearestNArtsRequestDto requestDto) {
         try {
             Long museumId = requestDto.getMuseumId();
             BigDecimal latitude = requestDto.getLatitude();
@@ -766,6 +768,32 @@ public class MainServiceImpl implements MainService {
             }
 
             return GetNearestNArtsResponseDto.success(nearestArtEntities);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+    }
+
+    /**
+     * 작품 id로 작품정보 조회
+     * @return validationFailed, databaseError, artNotFound, success
+     */
+    @Override
+    public ResponseEntity<? super GetArtResponseDto> getArt(GetArtRequestDto requestDto) {
+
+        try {
+
+            Long artId = requestDto.getArtId();
+
+            boolean exists = artRepository.existsByArtId(artId);
+            if(!exists) {
+                return GetArtResponseDto.artNotFound();
+            }
+
+            ArtEntity art = artRepository.findByArtId(artId);
+
+            return GetArtResponseDto.success(art);
 
         } catch (Exception e) {
             e.printStackTrace();
