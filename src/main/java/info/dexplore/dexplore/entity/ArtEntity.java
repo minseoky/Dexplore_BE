@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class ArtEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "art_it")
+    @Column(name = "art_id")
     private Long artId;
 
     @Column(name = "museum_id")
