@@ -626,6 +626,43 @@ public class MainServiceImpl implements MainService {
         return ResponseDto.success();
     }
 
+
+    /**
+     * 작품정보 조회(ADMIN)
+     * @return validationFailed, databaseError, museumNotFound, idNotMatching, success
+     */
+    @Override
+    public ResponseEntity<? super GetArtsResponseDto> getArtList(GetArtsRequestDto requestDto) {
+
+        List<ArtEntity> artEntities;
+
+        try {
+
+            Long museumId = requestDto.getMuseumId();
+
+            boolean exists = museumRepository.existsByMuseumId(museumId);
+
+            if(!exists) {
+                return GetArtsResponseDto.museumNotFound();
+            }
+
+            MuseumEntity museum = museumRepository.findByMuseumId(museumId);
+
+            String userId = findUserIdFromJwt();
+
+            if(!museum.getUserId().equals(userId)) {
+                return GetArtsResponseDto.idNotMatching();
+            }
+
+            artEntities = artRepository.findArtEntitiesByMuseumId(museumId);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+        return GetArtsResponseDto.success();
+    }
+
     /**
      * 사용자 위치에서 가장 가까운 박물관 반환
      * @return validationFailed, databaseError, museumNotFound, success

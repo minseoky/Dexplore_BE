@@ -112,6 +112,16 @@ public class AdminController {
         return response;
     }
 
+    /**
+     * 작품정보 조회하기
+     * @return validationFailed, databaseError, museumNotFound, idNotMatching, success
+     */
+    @GetMapping("/get-arts")
+    public ResponseEntity<? super GetArtsResponseDto> getArtList(@ModelAttribute @Valid GetArtsRequestDto requestBody) {
+        ResponseEntity<? super GetArtsResponseDto> response = mainService.getArtList(requestBody);
+        log.info("[getArtList]");
+        return response;
+    }
 
 
 
