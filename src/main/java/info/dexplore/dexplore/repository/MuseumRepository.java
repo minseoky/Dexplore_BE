@@ -15,4 +15,6 @@ public interface MuseumRepository extends JpaRepository<MuseumEntity, String> {
     List<MuseumEntity> findAllByUserId(String UserId);
 
     MuseumEntity findFirstByLocationId(Long locationId);
+
+    void deleteByMuseumId(Long museumId);
 }
