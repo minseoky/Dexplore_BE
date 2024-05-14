@@ -45,6 +45,17 @@ public class AdminController {
     }
 
     /**
+     * 박물관 삭제(아래 위치정보 및 작품정보 등도 모두 삭제)
+     * @return validationFailed, databaseError, museumNotFound, idNotMatching, success
+     */
+    @PostMapping("/delete-museum")
+    public ResponseEntity<? super DeleteMuseumResponseDto> deleteMuseum(@RequestBody @Valid DeleteMuseumRequestDto requestBody) {
+        ResponseEntity<? super DeleteMuseumResponseDto> response = mainService.deleteMuseum(requestBody);
+        log.info("[deleteMuseum]");
+        return response;
+    }
+
+    /**
      * 박물관 정보 가져오기
      * @return validationFailed, museumNotFound, IdNotMatching, databaseError, success
      */
@@ -89,6 +100,8 @@ public class AdminController {
         log.info("[updateArt]");
         return response;
     }
+
+
 
 
 

@@ -1,7 +1,6 @@
 package info.dexplore.dexplore.repository;
 
 import info.dexplore.dexplore.entity.MuseumEntity;
-import info.dexplore.dexplore.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
