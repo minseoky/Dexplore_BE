@@ -5,9 +5,11 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import info.dexplore.dexplore.dto.request.main.admin.*;
 import info.dexplore.dexplore.dto.request.main.user.GetNearestMuseumRequestDto;
+import info.dexplore.dexplore.dto.request.main.user.GetNearestNArtsRequestDto;
 import info.dexplore.dexplore.dto.response.ResponseDto;
 import info.dexplore.dexplore.dto.response.main.admin.*;
 import info.dexplore.dexplore.dto.response.main.user.GetNearestMuseumResponseDto;
+import info.dexplore.dexplore.dto.response.main.user.GetNearestNArtsResponseDto;
 import info.dexplore.dexplore.entity.ArtEntity;
 import info.dexplore.dexplore.entity.LocationEntity;
 import info.dexplore.dexplore.entity.MuseumEntity;
@@ -27,7 +29,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 
 @Slf4j
@@ -663,6 +668,8 @@ public class MainServiceImpl implements MainService {
         return GetArtsResponseDto.success();
     }
 
+    // -----------------------------------------------
+
     /**
      * 사용자 위치에서 가장 가까운 박물관 반환
      * @return validationFailed, databaseError, museumNotFound, success
@@ -715,6 +722,52 @@ public class MainServiceImpl implements MainService {
         return GetNearestMuseumResponseDto.success(nearestMuseum);
     }
 
+    @Override
+    @Transactional
+    public ResponseEntity<? super GetNearestNArtsResponseDto> getNearestNArts(GetNearestNArtsRequestDto requestDto) {
+        try {
+            Long museumId = requestDto.getMuseumId();
+            BigDecimal latitude = requestDto.getLatitude();
+            BigDecimal longitude = requestDto.getLongitude();
+            int amount = requestDto.getAmount();
+
+            boolean exists = museumRepository.existsByMuseumId(museumId);
+            if(!exists) {
+                return GetNearestNArtsResponseDto.museumNotFound();
+            }
+
+            List<ArtEntity> artEntities = artRepository.findArtEntitiesByMuseumId(museumId);
+
+            // TreeMap을 사용하여 거리를 기준으로 예술 작품을 자동으로 정렬
+            TreeMap<BigDecimal, ArtEntity> distanceMap = new TreeMap<>();
+
+            for (ArtEntity artEntity : artEntities) {
+                SpotEntity spot = spotRepository.findBySpotId(artEntity.getSpotId());
+                BigDecimal spotLatitude = spot.getLatitude();
+                BigDecimal spotLongitude = spot.getLongitude();
+                BigDecimal distance = calculateDistance(latitude, longitude, spotLatitude, spotLongitude);
+
+                distanceMap.put(distance, artEntity);
+            }
+
+            // TreeMap에서 가장 가까운 N개의 예술 작품을 선택
+            List<ArtEntity> nearestArtEntities = new ArrayList<>(amount);
+            int count = 0;
+            for (Map.Entry<BigDecimal, ArtEntity> entry : distanceMap.entrySet()) {
+                nearestArtEntities.add(entry.getValue());
+                count++;
+                if (count >= amount) {
+                    break;
+                }
+            }
+
+            return GetNearestNArtsResponseDto.success(nearestArtEntities);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+    }
 
     /**
      * 요청자의 JWT에서 userId 추출

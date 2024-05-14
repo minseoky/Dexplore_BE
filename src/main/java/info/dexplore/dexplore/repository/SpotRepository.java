@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SpotRepository extends JpaRepository<SpotEntity, String> {
     void deleteBySpotId(Long spotId);
+    SpotEntity findBySpotId(Long spotId);
 }
