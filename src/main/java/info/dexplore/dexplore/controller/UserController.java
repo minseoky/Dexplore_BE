@@ -1,8 +1,10 @@
 package info.dexplore.dexplore.controller;
 
+import info.dexplore.dexplore.dto.request.main.user.GetArtRequestDto;
 import info.dexplore.dexplore.dto.request.main.user.GetNearestMuseumRequestDto;
 import info.dexplore.dexplore.dto.request.main.user.GetNearestNArtsRequestDto;
 import info.dexplore.dexplore.dto.request.main.user.test.TestRequestDto;
+import info.dexplore.dexplore.dto.response.main.user.GetArtResponseDto;
 import info.dexplore.dexplore.dto.response.main.user.GetNearestMuseumResponseDto;
 import info.dexplore.dexplore.dto.response.main.user.GetNearestNArtsResponseDto;
 import info.dexplore.dexplore.dto.response.main.user.test.TestResponseDto;
@@ -48,8 +50,18 @@ public class UserController {
      */
     @GetMapping("/get-nearest-n-arts")
     public ResponseEntity<? super GetNearestNArtsResponseDto> getNearestNArts(@ModelAttribute @Valid GetNearestNArtsRequestDto reqeustBody) {
-        ResponseEntity<? super GetNearestNArtsResponseDto> response = mainService.getNearestNArts(reqeustBody);
+        ResponseEntity<? super GetNearestNArtsResponseDto> response = mainService.getNearestNArtList(reqeustBody);
         log.info("[getNearestNArts]");
+        return response;
+    }
+    /**
+     * 작품 정보 가져오기
+     * @return validationFailed, artNotFound, databaseError, success
+     */
+    @GetMapping("/get-art")
+    public ResponseEntity<? super GetArtResponseDto> getArt(@ModelAttribute @Valid GetArtRequestDto requestBody) {
+        ResponseEntity<? super GetArtResponseDto> response = mainService.getArt(requestBody);
+        log.info("[getArt]");
         return response;
     }
 
