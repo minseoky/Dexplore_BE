@@ -101,6 +101,16 @@ public class AdminController {
         return response;
     }
 
+    /**
+     * 작품정보 삭제하기
+     * @return validationFailed, databaseError, artNotFound, success
+     */
+    @PostMapping("/delete-art")
+    public ResponseEntity<? super DeleteArtResponseDto> deleteArt(@RequestBody @Valid DeleteArtRequestDto requestBody) {
+        ResponseEntity<? super DeleteArtResponseDto> response = mainService.deleteArt(requestBody);
+        log.info("[deleteArt");
+        return response;
+    }
 
 
 

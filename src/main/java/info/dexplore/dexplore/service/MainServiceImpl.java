@@ -580,6 +580,53 @@ public class MainServiceImpl implements MainService {
     }
 
     /**
+     * 작품정보 삭제
+     * @return validationFailed, databaseError, artNotFound, success
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<? super DeleteArtResponseDto> deleteArt(DeleteArtRequestDto requestDto) {
+
+        try {
+
+            Long artId = requestDto.getArtId();
+
+            boolean exists = artRepository.existsByArtId(artId);
+            if(!exists) {
+                return DeleteArtResponseDto.artNotFound();
+            }
+
+            ArtEntity art = artRepository.findByArtId(artId);
+
+            Long qrcodeId = art.getQrcodeId();
+            Long spotId = art.getSpotId();
+            Long ttsId = art.getTtsId();
+            String ttsUrl = ttsRepository.findByTtsId(ttsId).getBucketUrl();
+
+            // art 이미지 S3 버킷에서 삭제(iter)
+            String imgUrl = art.getImgUrl();
+            URL url = new URL(imgUrl);
+            String[] parts = url.getPath().split("/", 2);
+            String key = parts[1]; // 파일 키(경로) 추출
+            amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
+            artRepository.deleteByArtId(artId);
+
+            qrcodeRepository.deleteByQrcodeId(qrcodeId);
+            spotRepository.deleteBySpotId(spotId);
+            // 버킷에서 음성파일 삭제
+            ttsProvider.deleteTts(ttsUrl);
+            ttsRepository.deleteByTtsId(ttsId);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return ResponseDto.success();
+    }
+
+    /**
      * 사용자 위치에서 가장 가까운 박물관 반환
      * @return validationFailed, databaseError, museumNotFound, success
      */
