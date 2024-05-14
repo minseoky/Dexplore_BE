@@ -3,10 +3,7 @@ package info.dexplore.dexplore.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import info.dexplore.dexplore.dto.request.main.admin.GetMuseumRequestDto;
-import info.dexplore.dexplore.dto.request.main.admin.SaveArtRequestDto;
-import info.dexplore.dexplore.dto.request.main.admin.UpdateMuseumRequestDto;
-import info.dexplore.dexplore.dto.request.main.admin.SaveMuseumRequestDto;
+import info.dexplore.dexplore.dto.request.main.admin.*;
 import info.dexplore.dexplore.dto.request.main.user.GetNearestMuseumRequestDto;
 import info.dexplore.dexplore.dto.response.ResponseDto;
 import info.dexplore.dexplore.dto.response.main.admin.*;
@@ -54,7 +51,6 @@ public class MainServiceImpl implements MainService {
 
     /**
      * museum 등록하기
-     * @param requestDto
      * @return validationFailed, databaseError, duplicatedMuseumName, idNotFound, success
      */
     @Override
@@ -149,7 +145,6 @@ public class MainServiceImpl implements MainService {
 
     /**
      * 박물관 정보 수정하기
-     * @param requestDto
      * @return validationFailed, databaseError, idNotFound, success
      */
     @Override
@@ -252,7 +247,6 @@ public class MainServiceImpl implements MainService {
 
     /**
      * museum_id로 단일 박물관 찾기
-     * @param requestDto
      * @return validationFailed, databaseError, museumNotFound, idNotMatching, success
      */
     @Override
@@ -398,6 +392,110 @@ public class MainServiceImpl implements MainService {
         }
 
         return ResponseDto.success();
+    }
+
+    /**
+     * museum_id의 박물관의 작품정보 수정
+     * @return validationFailed, databaseError, idNotFound, artNotFound, museumNotFound, success
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<? super UpdateArtResponseDto> updateArt(MultipartFile imageFile, UpdateArtRequestDto requestDto) {
+        try {
+
+            String userId = findUserIdFromJwt();
+
+            boolean exists = userRepository.existsByUserId(userId);
+            if(!exists) {
+                return UpdateArtResponseDto.idNotFound();
+            }
+
+            Long museumId = requestDto.getMuseumId();
+            exists = museumRepository.existsByMuseumId(museumId);
+            if(!exists) {
+                return UpdateArtResponseDto.museumNotFound();
+            }
+
+            Long artId = requestDto.getArtId();
+            exists = artRepository.existsByArtId(artId);
+            if(!exists) {
+                return UpdateArtResponseDto.artNotFound();
+            }
+            //미술품 찾아오기
+            ArtEntity art = artRepository.findByArtId(requestDto.getArtId());
+
+            //미술품의 spot 정보 생성
+            BigDecimal latitude = requestDto.getLatitude();
+            BigDecimal longitude = requestDto.getLongitude();
+            String level = requestDto.getLevel();
+            BigDecimal edgeLatitude1 = requestDto.getEdgeLatitude1();
+            BigDecimal edgeLongitude1 = requestDto.getEdgeLongitude1();
+            BigDecimal edgeLatitude2 = requestDto.getEdgeLatitude2();
+            BigDecimal edgeLongitude2 = requestDto.getEdgeLongitude2();
+
+            SpotEntity spot = new SpotEntity(
+                    art.getSpotId(),
+                    latitude,
+                    longitude,
+                    level,
+                    edgeLatitude1,
+                    edgeLongitude1,
+                    edgeLatitude2,
+                    edgeLongitude2
+            );
+
+            spotRepository.save(spot);
+
+            String artName = requestDto.getArtName();
+            String artDescription = requestDto.getArtDescription();
+            String artYear = requestDto.getArtYear();
+            String authName = requestDto.getAuthName();
+
+            // 해당 imgUrl의 이미지 제거
+            String imgUrl = art.getImgUrl();
+            URL url = new URL(imgUrl);
+            String[] parts = url.getPath().split("/", 2);
+            String key = parts[1]; // 파일 키(경로) 추출
+
+            // 버킷에서 파일 삭제
+            amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
+
+            //S3 버킷 저장 및 새 img_url 생성
+            String fileName = userId + artName + imageFile.getOriginalFilename();
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(imageFile.getSize());
+            metadata.setContentType(imageFile.getContentType());
+
+            amazonS3.putObject(bucket, fileName, imageFile.getInputStream(), metadata);
+
+            String newImgUrl = amazonS3.getUrl(bucket, fileName).toString();
+
+            ArtEntity newArt = new ArtEntity(
+                    art.getArtId(),
+                    art.getMuseumId(),
+                    art.getSpotId(),
+                    art.getQrcodeId(),
+                    art.getTtsId(),
+                    artName,
+                    artDescription,
+                    artYear,
+                    authName,
+                    newImgUrl
+            );
+
+            artRepository.save(newArt);
+
+            //description이 변경된경우
+            if(art.getArtDescription().equals(artDescription)) {
+                ttsProvider.updateTts(artName, artDescription, art.getTtsId());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return null;
     }
 
     /**

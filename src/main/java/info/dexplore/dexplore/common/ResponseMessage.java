@@ -26,4 +26,6 @@ public interface ResponseMessage {
 
     String DUPLICATE_MUSEUM_NAME = "Duplicated museum name.";
 
+    String ART_NOT_FOUND = "Art not found.";
+
 }

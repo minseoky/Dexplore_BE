@@ -1,9 +1,6 @@
 package info.dexplore.dexplore.service;
 
-import info.dexplore.dexplore.dto.request.main.admin.GetMuseumRequestDto;
-import info.dexplore.dexplore.dto.request.main.admin.SaveArtRequestDto;
-import info.dexplore.dexplore.dto.request.main.admin.UpdateMuseumRequestDto;
-import info.dexplore.dexplore.dto.request.main.admin.SaveMuseumRequestDto;
+import info.dexplore.dexplore.dto.request.main.admin.*;
 import info.dexplore.dexplore.dto.request.main.user.GetNearestMuseumRequestDto;
 import info.dexplore.dexplore.dto.response.main.admin.*;
 import info.dexplore.dexplore.dto.response.main.user.GetNearestMuseumResponseDto;
@@ -17,5 +14,6 @@ public interface MainService {
     ResponseEntity<? super GetMuseumResponseDto> getMuseum(GetMuseumRequestDto requestDto);
     ResponseEntity<? super GetMuseumListResponseDto> getMuseumList();
     ResponseEntity<? super SaveArtResponseDto> saveArt(MultipartFile imageFile, SaveArtRequestDto requestDto);
+    ResponseEntity<? super UpdateArtResponseDto> updateArt(MultipartFile imageFile, UpdateArtRequestDto requestDto);
     ResponseEntity<? super GetNearestMuseumResponseDto> getNearestMuseum(GetNearestMuseumRequestDto requestDto);
 }
