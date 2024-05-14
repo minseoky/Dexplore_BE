@@ -665,7 +665,7 @@ public class MainServiceImpl implements MainService {
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
-        return GetArtsResponseDto.success();
+        return GetArtsResponseDto.success(artEntities);
     }
 
     // -----------------------------------------------
@@ -722,6 +722,10 @@ public class MainServiceImpl implements MainService {
         return GetNearestMuseumResponseDto.success(nearestMuseum);
     }
 
+    /**
+     * 사용자 위치에서 가장 가까운 작품 N개 반환
+     * @return validationFailed, databaseError, museumNotFound, success
+     */
     @Override
     @Transactional
     public ResponseEntity<? super GetNearestNArtsResponseDto> getNearestNArts(GetNearestNArtsRequestDto requestDto) {
