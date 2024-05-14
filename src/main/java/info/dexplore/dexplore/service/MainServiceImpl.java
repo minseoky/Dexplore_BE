@@ -495,7 +495,7 @@ public class MainServiceImpl implements MainService {
             return ResponseDto.databaseError();
         }
 
-        return null;
+        return ResponseDto.success();
     }
 
     /**
