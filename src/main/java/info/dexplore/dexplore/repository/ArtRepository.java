@@ -5,5 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ArtRepository extends JpaRepository<ArtEntity, String> {
 
+    ArtEntity findByArtId(Long artId);
+
+    boolean existsByArtId(Long artId);
 
 }

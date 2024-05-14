@@ -1,5 +1,6 @@
 package info.dexplore.dexplore.provider;
 
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import info.dexplore.dexplore.entity.TtsEntity;
 import info.dexplore.dexplore.repository.TtsRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import com.google.cloud.texttospeech.v1.*;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import java.io.IOException;
+import java.net.URL;
 
 
 @Component
@@ -23,7 +25,7 @@ public class TtsProvider {
     private final AmazonS3 amazonS3;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
-    
+
     private final TtsRepository ttsRepository;
 
     /**
@@ -34,7 +36,7 @@ public class TtsProvider {
         try (TextToSpeechClient textToSpeechClient = TextToSpeechClient.create()) {
             // TTS 변환 용 input 설정, 여기서 input은 작품 설명
             SynthesisInput input = SynthesisInput.newBuilder().setText(artDescription).build();
-            
+
             //작품 설명이 한글인지 영어인지 체크 및 언어 코드 설정
             String languageCode = "";
             boolean languageCheck = artDescription.matches(".*[ㄱ-ㅎㅏ-ㅣ가-힣]+.*");
@@ -52,17 +54,17 @@ public class TtsProvider {
             // 생성된 TTS 파일을 S3 버킷에 업로드
             SynthesizeSpeechResponse response = textToSpeechClient.synthesizeSpeech(input, voice, audioConfig);
             ByteString audioContents = response.getAudioContent();
-            
+
             byte[] data = audioContents.toByteArray();
             String contentType = "audio/mpeg";
-            
+
             // S3 업로드를 위한 mp3 파일로 변경
             MultipartFile file = new MockMultipartFile(artName, artName, contentType, data);
 
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(file.getSize());
             metadata.setContentType(file.getContentType());
-    
+
             amazonS3.putObject(bucket, artName + "_TTS", file.getInputStream(), metadata);
             amazonS3.getUrl(bucket, artName + "_TTS").toString();
 
@@ -74,8 +76,69 @@ public class TtsProvider {
                 ttsUrl
             );
             ttsRepository.save(newTts);
-            
+
             return newTts.getTtsId();
         }
+    }
+
+    public void updateTts(String artName, String newDescription, Long ttsId) throws IOException{
+
+        TtsEntity tts = ttsRepository.findByTtsId(ttsId);
+
+        try (TextToSpeechClient textToSpeechClient = TextToSpeechClient.create()) {
+            // TTS 변환 용 input 설정, 여기서 input은 작품 설명
+            SynthesisInput input = SynthesisInput.newBuilder().setText(newDescription).build();
+
+            //작품 설명이 한글인지 영어인지 체크 및 언어 코드 설정
+            String languageCode = "";
+            boolean languageCheck = newDescription.matches(".*[ㄱ-ㅎㅏ-ㅣ가-힣]+.*");
+            if (languageCheck) languageCode = "ko-KR";
+            else languageCode = "en-US";
+
+            VoiceSelectionParams voice = VoiceSelectionParams.newBuilder()
+                    .setLanguageCode(languageCode)
+                    .setSsmlGender(SsmlVoiceGender.NEUTRAL)
+                    .build();
+            AudioConfig audioConfig = AudioConfig.newBuilder()
+                    .setAudioEncoding(AudioEncoding.MP3)
+                    .build();
+
+            // 생성된 TTS 파일을 S3 버킷에 업로드
+            SynthesizeSpeechResponse response = textToSpeechClient.synthesizeSpeech(input, voice, audioConfig);
+            ByteString audioContents = response.getAudioContent();
+
+            byte[] data = audioContents.toByteArray();
+            String contentType = "audio/mpeg";
+
+            // S3 업로드를 위한 mp3 파일로 변경
+            MultipartFile file = new MockMultipartFile(artName, artName, contentType, data);
+
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(file.getSize());
+            metadata.setContentType(file.getContentType());
+
+            // 해당 ttsUrl tts 제거
+            String ttsUrl = tts.getBucketUrl();
+            URL url = new URL(ttsUrl);
+            String[] parts = url.getPath().split("/", 2);
+            String key = parts[1]; // 파일 키(경로) 추출
+
+            // 버킷에서 파일 삭제
+            amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
+
+            amazonS3.putObject(bucket, artName + "_TTS", file.getInputStream(), metadata);
+            amazonS3.getUrl(bucket, artName + "_TTS").toString();
+
+            ttsUrl = amazonS3.getUrl(bucket, artName + "_TTS").toString();
+            // TTS_Url TTS 데이터 베이스에 저장 필요
+
+            TtsEntity newTts = new TtsEntity(
+                    tts.getTtsId(),
+                    ttsUrl
+            );
+            ttsRepository.save(newTts);
+
+        }
+
     }
 }

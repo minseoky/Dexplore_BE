@@ -1,10 +1,7 @@
 package info.dexplore.dexplore.controller;
 
 
-import info.dexplore.dexplore.dto.request.main.admin.GetMuseumRequestDto;
-import info.dexplore.dexplore.dto.request.main.admin.SaveArtRequestDto;
-import info.dexplore.dexplore.dto.request.main.admin.SaveMuseumRequestDto;
-import info.dexplore.dexplore.dto.request.main.admin.UpdateMuseumRequestDto;
+import info.dexplore.dexplore.dto.request.main.admin.*;
 import info.dexplore.dexplore.dto.response.main.admin.*;
 import info.dexplore.dexplore.service.MainService;
 import jakarta.validation.Valid;
@@ -69,11 +66,27 @@ public class AdminController {
         return response;
     }
 
+    /**
+     * 작품정보 등록하기
+     * @return validationFailed, databaseError, idNotFound, museumNotFound, success
+     */
     @PostMapping("/save-art")
     public ResponseEntity<? super SaveArtResponseDto> saveArt(@RequestParam("imageFile") MultipartFile imageFile,
                                                               @ModelAttribute @Valid SaveArtRequestDto requestBody) {
         ResponseEntity<? super SaveArtResponseDto> response = mainService.saveArt(imageFile, requestBody);
         log.info("[saveArt]");
+        return response;
+    }
+
+    /**
+     * 작품정보 수정하기
+     * @return validationFailed, databaseError, idNotFound, artNotFound, museumNotFound, success
+     */
+    @PostMapping("/update-art")
+    public ResponseEntity<? super UpdateArtResponseDto> updateArt(@RequestParam("imageFile") MultipartFile imageFile,
+                                                                  @ModelAttribute @Valid UpdateArtRequestDto requestBody) {
+        ResponseEntity<? super UpdateArtResponseDto> response = mainService.updateArt(imageFile, requestBody);
+        log.info("[updateArt]");
         return response;
     }
 
