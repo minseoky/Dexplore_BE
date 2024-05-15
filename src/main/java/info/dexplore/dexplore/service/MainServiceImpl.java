@@ -805,7 +805,7 @@ public class MainServiceImpl implements MainService {
 
             String qrcodeHashKey = requestDto.getQrcodeHashKey();
 
-            QrcodeEntity qrcode = qrcodeRepository.findByQrcodeHashKey(qrcodeHashKey);
+            QrcodeEntity qrcode = qrcodeRepository.findByQrcodeHashkey(qrcodeHashKey);
 
             Long qrcodeId = qrcode.getQrcodeId();
 
