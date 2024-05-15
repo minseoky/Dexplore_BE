@@ -30,4 +30,6 @@ public interface ResponseCode {
 
     String TTS_NOT_FOUND = "TNF";
 
+    String QR_NOT_FOUND = "QNF";
+
 }

@@ -805,7 +805,7 @@ public class MainServiceImpl implements MainService {
 
             String qrcodeHashKey = requestDto.getQrcodeHashKey();
 
-            QrcodeEntity qrcode = qrcodeRepository.findByQrcodeHashkey(qrcodeHashKey);
+            QrcodeEntity qrcode = qrcodeRepository.findByQrcodeHashKey(qrcodeHashKey);
 
             Long qrcodeId = qrcode.getQrcodeId();
 
@@ -842,6 +842,30 @@ public class MainServiceImpl implements MainService {
 
             TtsEntity tts = ttsRepository.findByTtsId(ttsId);
             return GetTtsResponseDto.success(tts);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+    }
+
+    /**
+     * qrcode 조회
+     * @return validationFailed, databaseError, qrcodeNotFound, success
+     */
+    @Override
+    public ResponseEntity<? super GetQrcodeResponseDto> getQrcode(GetQrcodeRequestDto requestDto) {
+
+        try {
+
+            Long qrcodeId = requestDto.getQrcodeId();
+            boolean exists = qrcodeRepository.existsByQrcodeId(qrcodeId);
+            if(!exists) {
+                return GetQrcodeResponseDto.qrcodeNotFound();
+            }
+
+            QrcodeEntity qrcode = qrcodeRepository.findByQrcodeId(qrcodeId);
+            return GetQrcodeResponseDto.success(qrcode);
 
         } catch (Exception e) {
             e.printStackTrace();
