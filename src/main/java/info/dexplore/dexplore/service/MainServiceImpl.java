@@ -4,18 +4,17 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import info.dexplore.dexplore.dto.request.main.admin.*;
+import info.dexplore.dexplore.dto.request.main.user.GetArtByHashRequestDto;
 import info.dexplore.dexplore.dto.request.main.user.GetArtRequestDto;
 import info.dexplore.dexplore.dto.request.main.user.GetNearestMuseumRequestDto;
 import info.dexplore.dexplore.dto.request.main.user.GetNearestNArtsRequestDto;
 import info.dexplore.dexplore.dto.response.ResponseDto;
 import info.dexplore.dexplore.dto.response.main.admin.*;
+import info.dexplore.dexplore.dto.response.main.user.GetArtByHashResponseDto;
 import info.dexplore.dexplore.dto.response.main.user.GetArtResponseDto;
 import info.dexplore.dexplore.dto.response.main.user.GetNearestMuseumResponseDto;
 import info.dexplore.dexplore.dto.response.main.user.GetNearestNArtsResponseDto;
-import info.dexplore.dexplore.entity.ArtEntity;
-import info.dexplore.dexplore.entity.LocationEntity;
-import info.dexplore.dexplore.entity.MuseumEntity;
-import info.dexplore.dexplore.entity.SpotEntity;
+import info.dexplore.dexplore.entity.*;
 import info.dexplore.dexplore.provider.QrcodeProvider;
 import info.dexplore.dexplore.provider.TtsProvider;
 import info.dexplore.dexplore.repository.*;
@@ -794,6 +793,36 @@ public class MainServiceImpl implements MainService {
             ArtEntity art = artRepository.findByArtId(artId);
 
             return GetArtResponseDto.success(art);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+    }
+
+    /**
+     * qrcode hash로 art 조회
+     * @return validationFailed, databaseError, artNotFound, success
+     */
+    @Override
+    public ResponseEntity<? super GetArtByHashResponseDto> getArtByHash(GetArtByHashRequestDto requestDto) {
+
+        try {
+
+            String qrcodeHashKey = requestDto.getQrcodeHashKey();
+
+            QrcodeEntity qrcode = qrcodeRepository.findByQrcodeHashkey(qrcodeHashKey);
+
+            Long qrcodeId = qrcode.getQrcodeId();
+
+            boolean exists = artRepository.existsByQrcodeId(qrcodeId);
+            if(!exists) {
+                return GetArtByHashResponseDto.artNotFound();
+            }
+
+            ArtEntity art = artRepository.findByQrcodeId(qrcodeId);
+
+            return GetArtByHashResponseDto.success(art);
 
         } catch (Exception e) {
             e.printStackTrace();

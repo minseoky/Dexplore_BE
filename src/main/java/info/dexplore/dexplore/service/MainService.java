@@ -1,10 +1,12 @@
 package info.dexplore.dexplore.service;
 
 import info.dexplore.dexplore.dto.request.main.admin.*;
+import info.dexplore.dexplore.dto.request.main.user.GetArtByHashRequestDto;
 import info.dexplore.dexplore.dto.request.main.user.GetArtRequestDto;
 import info.dexplore.dexplore.dto.request.main.user.GetNearestMuseumRequestDto;
 import info.dexplore.dexplore.dto.request.main.user.GetNearestNArtsRequestDto;
 import info.dexplore.dexplore.dto.response.main.admin.*;
+import info.dexplore.dexplore.dto.response.main.user.GetArtByHashResponseDto;
 import info.dexplore.dexplore.dto.response.main.user.GetArtResponseDto;
 import info.dexplore.dexplore.dto.response.main.user.GetNearestMuseumResponseDto;
 import info.dexplore.dexplore.dto.response.main.user.GetNearestNArtsResponseDto;
@@ -26,4 +28,5 @@ public interface MainService {
     ResponseEntity<? super GetNearestMuseumResponseDto> getNearestMuseum(GetNearestMuseumRequestDto requestDto);
     ResponseEntity<? super GetNearestNArtsResponseDto> getNearestNArtList(GetNearestNArtsRequestDto requestDto);
     ResponseEntity<? super GetArtResponseDto> getArt(GetArtRequestDto requestDto);
+    ResponseEntity<? super GetArtByHashResponseDto> getArtByHash(GetArtByHashRequestDto requestDto);
 }

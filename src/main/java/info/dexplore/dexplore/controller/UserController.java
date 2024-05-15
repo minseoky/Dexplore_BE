@@ -1,9 +1,11 @@
 package info.dexplore.dexplore.controller;
 
+import info.dexplore.dexplore.dto.request.main.user.GetArtByHashRequestDto;
 import info.dexplore.dexplore.dto.request.main.user.GetArtRequestDto;
 import info.dexplore.dexplore.dto.request.main.user.GetNearestMuseumRequestDto;
 import info.dexplore.dexplore.dto.request.main.user.GetNearestNArtsRequestDto;
 import info.dexplore.dexplore.dto.request.main.user.test.TestRequestDto;
+import info.dexplore.dexplore.dto.response.main.user.GetArtByHashResponseDto;
 import info.dexplore.dexplore.dto.response.main.user.GetArtResponseDto;
 import info.dexplore.dexplore.dto.response.main.user.GetNearestMuseumResponseDto;
 import info.dexplore.dexplore.dto.response.main.user.GetNearestNArtsResponseDto;
@@ -62,6 +64,17 @@ public class UserController {
     public ResponseEntity<? super GetArtResponseDto> getArt(@ModelAttribute @Valid GetArtRequestDto requestBody) {
         ResponseEntity<? super GetArtResponseDto> response = mainService.getArt(requestBody);
         log.info("[getArt]");
+        return response;
+    }
+
+    /**
+     * qr hash로 작품 정보 가져오기
+     * @return validationFailed, artNotFound, databaseError, success
+     */
+    @GetMapping("/get-art-by-hash")
+    public ResponseEntity<? super GetArtByHashResponseDto> getArtByHash(@ModelAttribute @Valid GetArtByHashRequestDto requestBody) {
+        ResponseEntity<? super GetArtByHashResponseDto> response = mainService.getArtByHash(requestBody);
+        log.info("[getArtByHash]");
         return response;
     }
 
