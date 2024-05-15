@@ -24,4 +24,5 @@ public interface MainService {
     ResponseEntity<? super GetArtResponseDto> getArt(GetArtRequestDto requestDto);
     ResponseEntity<? super GetArtByHashResponseDto> getArtByHash(GetArtByHashRequestDto requestDto);
     ResponseEntity<? super GetTtsResponseDto> getTts(GetTtsRequestDto requestDto);
+    ResponseEntity<? super GetQrcodeResponseDto> getQrcode(GetQrcodeRequestDto requestDto);
 }

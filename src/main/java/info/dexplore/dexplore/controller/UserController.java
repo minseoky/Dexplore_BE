@@ -83,5 +83,16 @@ public class UserController {
         return response;
     }
 
+    /**
+     * qrcode 조회하기
+     * @return validationFailed, databaseError, qrcodeNotFound, success
+     */
+    @GetMapping("/get-qrcode")
+    public ResponseEntity<? super GetQrcodeResponseDto> getQrcode(@ModelAttribute @Valid GetQrcodeRequestDto requestDto) {
+        ResponseEntity<? super GetQrcodeResponseDto> response = mainService.getQrcode(requestDto);
+        log.info("[getQrcode]");
+        return response;
+    }
 
 }
+

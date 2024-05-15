@@ -30,4 +30,6 @@ public interface ResponseMessage {
 
     String TTS_NOT_FOUND = "Tts not found.";
 
+    String QR_NOT_FOUND = "Qrcode not found";
+
 }
