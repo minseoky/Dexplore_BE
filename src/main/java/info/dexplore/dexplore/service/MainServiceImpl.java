@@ -4,16 +4,10 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import info.dexplore.dexplore.dto.request.main.admin.*;
-import info.dexplore.dexplore.dto.request.main.user.GetArtByHashRequestDto;
-import info.dexplore.dexplore.dto.request.main.user.GetArtRequestDto;
-import info.dexplore.dexplore.dto.request.main.user.GetNearestMuseumRequestDto;
-import info.dexplore.dexplore.dto.request.main.user.GetNearestNArtsRequestDto;
+import info.dexplore.dexplore.dto.request.main.user.*;
 import info.dexplore.dexplore.dto.response.ResponseDto;
 import info.dexplore.dexplore.dto.response.main.admin.*;
-import info.dexplore.dexplore.dto.response.main.user.GetArtByHashResponseDto;
-import info.dexplore.dexplore.dto.response.main.user.GetArtResponseDto;
-import info.dexplore.dexplore.dto.response.main.user.GetNearestMuseumResponseDto;
-import info.dexplore.dexplore.dto.response.main.user.GetNearestNArtsResponseDto;
+import info.dexplore.dexplore.dto.response.main.user.*;
 import info.dexplore.dexplore.entity.*;
 import info.dexplore.dexplore.provider.QrcodeProvider;
 import info.dexplore.dexplore.provider.TtsProvider;
@@ -823,6 +817,25 @@ public class MainServiceImpl implements MainService {
             ArtEntity art = artRepository.findByQrcodeId(qrcodeId);
 
             return GetArtByHashResponseDto.success(art);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+    }
+
+    /**
+     * tts정보 조회
+     * @return validationFailed, databaseError, ttsNotFound, success
+     */
+    @Override
+    public ResponseEntity<? super GetTtsResponseDto> getTts(GetTtsRequestDto requestDto) {
+
+        try {
+
+            Long ttsId = requestDto.getTtsId();
+            TtsEntity tts = ttsRepository.findByTtsId(ttsId);
+            return GetTtsResponseDto.success(tts);
 
         } catch (Exception e) {
             e.printStackTrace();

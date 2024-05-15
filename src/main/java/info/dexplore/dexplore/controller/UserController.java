@@ -1,14 +1,8 @@
 package info.dexplore.dexplore.controller;
 
-import info.dexplore.dexplore.dto.request.main.user.GetArtByHashRequestDto;
-import info.dexplore.dexplore.dto.request.main.user.GetArtRequestDto;
-import info.dexplore.dexplore.dto.request.main.user.GetNearestMuseumRequestDto;
-import info.dexplore.dexplore.dto.request.main.user.GetNearestNArtsRequestDto;
+import info.dexplore.dexplore.dto.request.main.user.*;
 import info.dexplore.dexplore.dto.request.main.user.test.TestRequestDto;
-import info.dexplore.dexplore.dto.response.main.user.GetArtByHashResponseDto;
-import info.dexplore.dexplore.dto.response.main.user.GetArtResponseDto;
-import info.dexplore.dexplore.dto.response.main.user.GetNearestMuseumResponseDto;
-import info.dexplore.dexplore.dto.response.main.user.GetNearestNArtsResponseDto;
+import info.dexplore.dexplore.dto.response.main.user.*;
 import info.dexplore.dexplore.dto.response.main.user.test.TestResponseDto;
 import info.dexplore.dexplore.service.MainService;
 import jakarta.validation.Valid;
@@ -77,5 +71,17 @@ public class UserController {
         log.info("[getArtByHash]");
         return response;
     }
+
+    /**
+     * tts 조히하기
+     * @return validationFailed, ttsNotFound, databaseError, success
+     */
+    @GetMapping("/get-tts")
+    public ResponseEntity<? super GetTtsResponseDto> getTts(@ModelAttribute @Valid GetTtsRequestDto requestDto) {
+        ResponseEntity<? super GetTtsResponseDto> response = mainService.getTts(requestDto);
+        log.info("[getTts]");
+        return response;
+    }
+
 
 }

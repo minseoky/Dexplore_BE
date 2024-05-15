@@ -28,4 +28,6 @@ public interface ResponseMessage {
 
     String ART_NOT_FOUND = "Art not found.";
 
+    String TTS_NOT_FOUND = "Tts not found.";
+
 }

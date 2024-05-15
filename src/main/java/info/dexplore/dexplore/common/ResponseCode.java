@@ -28,4 +28,6 @@ public interface ResponseCode {
 
     String ART_NOT_FOUND = "ANF";
 
+    String TTS_NOT_FOUND = "TNF";
+
 }

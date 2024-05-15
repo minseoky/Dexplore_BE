@@ -1,15 +1,9 @@
 package info.dexplore.dexplore.service;
 
 import info.dexplore.dexplore.dto.request.main.admin.*;
-import info.dexplore.dexplore.dto.request.main.user.GetArtByHashRequestDto;
-import info.dexplore.dexplore.dto.request.main.user.GetArtRequestDto;
-import info.dexplore.dexplore.dto.request.main.user.GetNearestMuseumRequestDto;
-import info.dexplore.dexplore.dto.request.main.user.GetNearestNArtsRequestDto;
+import info.dexplore.dexplore.dto.request.main.user.*;
 import info.dexplore.dexplore.dto.response.main.admin.*;
-import info.dexplore.dexplore.dto.response.main.user.GetArtByHashResponseDto;
-import info.dexplore.dexplore.dto.response.main.user.GetArtResponseDto;
-import info.dexplore.dexplore.dto.response.main.user.GetNearestMuseumResponseDto;
-import info.dexplore.dexplore.dto.response.main.user.GetNearestNArtsResponseDto;
+import info.dexplore.dexplore.dto.response.main.user.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,4 +23,5 @@ public interface MainService {
     ResponseEntity<? super GetNearestNArtsResponseDto> getNearestNArtList(GetNearestNArtsRequestDto requestDto);
     ResponseEntity<? super GetArtResponseDto> getArt(GetArtRequestDto requestDto);
     ResponseEntity<? super GetArtByHashResponseDto> getArtByHash(GetArtByHashRequestDto requestDto);
+    ResponseEntity<? super GetTtsResponseDto> getTts(GetTtsRequestDto requestDto);
 }
