@@ -15,4 +15,8 @@ public interface ArtRepository extends JpaRepository<ArtEntity, String> {
 
     void deleteByArtId(Long artId);
 
+    ArtEntity findByQrcodeId(Long qrcodeId);
+
+    boolean existsByQrcodeId(Long qrcodeId);
+
 }
