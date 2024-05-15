@@ -834,6 +834,12 @@ public class MainServiceImpl implements MainService {
         try {
 
             Long ttsId = requestDto.getTtsId();
+
+            boolean exists = ttsRepository.existsByTtsId(ttsId);
+            if(!exists) {
+                return GetTtsResponseDto.ttsNotFound();
+            }
+
             TtsEntity tts = ttsRepository.findByTtsId(ttsId);
             return GetTtsResponseDto.success(tts);
 

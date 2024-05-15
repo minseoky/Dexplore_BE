@@ -9,4 +9,6 @@ public interface TtsRepository extends JpaRepository<TtsEntity, String> {
 
     void deleteByTtsId(Long ttsId);
 
+    boolean existsByTtsId(Long ttsId);
+
 }
