@@ -13,6 +13,8 @@ public interface ArtRepository extends JpaRepository<ArtEntity, String> {
 
     List<ArtEntity> findArtEntitiesByMuseumId(Long museumId);
 
+    List<ArtEntity> findAllByMuseumId(Long museumId);
+
     void deleteByArtId(Long artId);
 
     ArtEntity findByQrcodeId(Long qrcodeId);
