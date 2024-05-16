@@ -735,7 +735,7 @@ public class MainServiceImpl implements MainService {
                 return GetNearestNArtsResponseDto.museumNotFound();
             }
 
-            List<ArtEntity> artEntities = artRepository.findArtEntitiesByMuseumId(museumId);
+            List<ArtEntity> artEntities = artRepository.findAllByMuseumId(museumId);
 
             // TreeMap을 사용하여 거리를 기준으로 예술 작품을 자동으로 정렬
             TreeMap<BigDecimal, ArtEntity> distanceMap = new TreeMap<>();
