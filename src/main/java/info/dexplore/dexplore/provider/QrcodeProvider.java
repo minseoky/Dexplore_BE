@@ -39,6 +39,7 @@ public class QrcodeProvider {
 
         //input+uuid
         String hashKey = input + uuidString;
+        /* 해시 생략 */
         return hashKey;
     }
 

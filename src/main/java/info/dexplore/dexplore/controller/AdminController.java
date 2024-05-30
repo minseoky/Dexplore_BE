@@ -123,6 +123,16 @@ public class AdminController {
         return response;
     }
 
+    /**
+     * 박물관 id에 속하는 모든 작품의 qrcode를 리스트로 반환
+     * @return validationFailed, databaseError, museumNotFound, idNotMatching, success
+     */
+    @GetMapping("/get-qrcode-list")
+    public ResponseEntity<? super GetQrcodeListByMuseumIdResponseDto> getQrcodeListByMuseumId(@ModelAttribute @Valid GetQrcodeListByMuseumIdRequestDto requestBody) {
+        ResponseEntity<? super GetQrcodeListByMuseumIdResponseDto> response = mainService.getQrcodeListByMuseumId(requestBody);
+        log.info("[getQrcodeListByMuseumId]");
+        return response;
+    }
 
 
 }
