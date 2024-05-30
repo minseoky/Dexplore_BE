@@ -663,6 +663,47 @@ public class MainServiceImpl implements MainService {
         return GetArtsResponseDto.success(artEntities);
     }
 
+    /**
+     * 박물관 id에 속하는 모든 작품의 qrcode를 리스트로 반환
+     * @return validationFailed, databaseError, museumNotFound, idNotMatching, success
+     */
+    @Override
+    public ResponseEntity<? super GetQrcodeListByMuseumIdResponseDto> getQrcodeListByMuseumId(GetQrcodeListByMuseumIdRequestDto requestDto) {
+
+        try {
+
+            long museumId = requestDto.getMuseumId();
+
+            boolean exists = museumRepository.existsByMuseumId(museumId);
+            if(!exists) {
+                return GetQrcodeListByMuseumIdResponseDto.museumNotFound();
+            }
+
+            MuseumEntity museum = museumRepository.findByMuseumId(museumId);
+
+            String userId = findUserIdFromJwt();
+
+            if(!museum.getUserId().equals(userId)) {
+                return GetQrcodeListByMuseumIdResponseDto.idNotMatching();
+            }
+
+            List<ArtEntity> artList = artRepository.findArtEntitiesByMuseumId(museumId);
+            List<QrcodeEntity> qrcodeList = new ArrayList<>();
+            for (ArtEntity art : artList) {
+                Long qrcodeId = art.getQrcodeId();
+                QrcodeEntity qrcode = qrcodeRepository.findByQrcodeId(qrcodeId);
+                qrcodeList.add(qrcode);
+            }
+
+            return GetQrcodeListByMuseumIdResponseDto.success(qrcodeList);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+    }
+
     // -----------------------------------------------
 
     /**
