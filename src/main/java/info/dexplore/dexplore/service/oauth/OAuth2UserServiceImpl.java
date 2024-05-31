@@ -44,7 +44,6 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
         else if(oauthClientName.equals("naver")) {
             Map<String, String> responseMap = (Map<String, String>) oAuth2User.getAttributes().get("response");
             userId = "naver_" + responseMap.get("id").substring(0,32);
-            email = responseMap.get("email");
             userEntity = new UserEntity(userId, password, email, "naver", "ROLE_USER");
         }
 
