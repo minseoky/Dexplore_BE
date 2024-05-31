@@ -179,19 +179,19 @@ public class AuthServiceImpl implements AuthService{
 
             String password = requestDto.getPassword();
             String encodedPassword = userEntity.getPassword();
+            role = userEntity.getRole();
             boolean isMatched = passwordEncoder.matches(password, encodedPassword);
             if (!isMatched) return SignInResponseDto.signInFail();
 
-            token = jwtProvider.create(userId);
+            token = jwtProvider.create(userId, role);
 
             role = userRepository.findByUserId(userId).getRole();
 
+            return SignInResponseDto.success(token, role);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
-
-        return SignInResponseDto.success(token, role);
     }
 
 
