@@ -333,9 +333,10 @@ public class MainServiceImpl implements MainService {
     @Override
     public ResponseEntity<? super GetMuseumResponseDto> getMuseum(GetMuseumRequestDto requestDto) {
 
-        MuseumEntity museum;
 
         try {
+            MuseumEntity museum;
+            LocationEntity location;
 
             Long museumId = requestDto.getMuseumId();
             boolean exists = museumRepository.existsByMuseumId(museumId);
@@ -355,13 +356,17 @@ public class MainServiceImpl implements MainService {
                         return GetMuseumResponseDto.idNotMatching();
                     }
                 }
+
+                location = locationRepository.findByLocationId(museum.getLocationId());
+
             }
+
+            return GetMuseumResponseDto.success(museum, location);
 
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
-        return GetMuseumResponseDto.success(museum);
     }
 
     /**
