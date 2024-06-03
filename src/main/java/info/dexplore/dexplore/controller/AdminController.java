@@ -37,11 +37,18 @@ public class AdminController {
      * @returnvalidationFailed, idNotFound, museumNotFound, databaseError, success
      */
     @PostMapping("/update-museum")
-    public ResponseEntity<? super UpdateMuseumResponseDto> updateMuseum(@RequestParam("imageFile") MultipartFile imageFile,
+    public ResponseEntity<? super UpdateMuseumResponseDto> updateMuseum(@RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                                                                         @ModelAttribute @Valid UpdateMuseumRequestDto requestBody){
-        ResponseEntity<? super UpdateMuseumResponseDto> response = mainService.updateMuseum(imageFile, requestBody);
-        log.info("[updateMuseum]: {museumName: {}}",  requestBody.getMuseumName());
-        return response;
+        if (imageFile == null || imageFile.isEmpty()) {
+            ResponseEntity<? super UpdateMuseumResponseDto> response = mainService.updateMuseumWithNoImg(requestBody);
+            log.info("[updateMuseum]: {museumName: {}}",  requestBody.getMuseumName());
+            return response;
+        } else {
+            ResponseEntity<? super UpdateMuseumResponseDto> response = mainService.updateMuseum(imageFile, requestBody);
+            log.info("[updateMuseum]: {museumName: {}}",  requestBody.getMuseumName());
+            return response;
+        }
+
     }
 
     /**
