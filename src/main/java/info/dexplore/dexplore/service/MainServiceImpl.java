@@ -550,12 +550,13 @@ public class MainServiceImpl implements MainService {
 
             artRepository.save(art);
 
+            return SaveArtResponseDto.success(qrcodeId);
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
 
-        return ResponseDto.success();
     }
 
     /**
