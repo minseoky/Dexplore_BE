@@ -4,6 +4,7 @@ import info.dexplore.dexplore.common.ResponseCode;
 import info.dexplore.dexplore.common.ResponseMessage;
 import info.dexplore.dexplore.dto.response.ResponseDto;
 import info.dexplore.dexplore.entity.ArtEntity;
+import info.dexplore.dexplore.entity.SpotEntity;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,10 +13,12 @@ import org.springframework.http.ResponseEntity;
 public class GetArtByHashResponseDto extends ResponseDto {
 
     private ArtEntity art;
+    private SpotEntity spot;
 
-    public GetArtByHashResponseDto(ArtEntity art) {
+    public GetArtByHashResponseDto(ArtEntity art, SpotEntity spot) {
         super();
         this.art = art;
+        this.spot = spot;
     }
 
     public static ResponseEntity<ResponseDto> artNotFound() {
@@ -23,8 +26,8 @@ public class GetArtByHashResponseDto extends ResponseDto {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
     }
 
-    public static ResponseEntity<ResponseDto> success(ArtEntity art) {
-        GetArtResponseDto responseBody = new GetArtResponseDto(art);
+    public static ResponseEntity<ResponseDto> success(ArtEntity art, SpotEntity spot) {
+        GetArtByHashResponseDto responseBody = new GetArtByHashResponseDto(art, spot);
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 }

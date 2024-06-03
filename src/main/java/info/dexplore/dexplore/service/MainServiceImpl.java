@@ -1002,8 +1002,10 @@ public class MainServiceImpl implements MainService {
             }
 
             ArtEntity art = artRepository.findByArtId(artId);
+            Long spotId = art.getSpotId();
+            SpotEntity spot = spotRepository.findBySpotId(spotId);
 
-            return GetArtResponseDto.success(art);
+            return GetArtResponseDto.success(art,spot);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1032,8 +1034,10 @@ public class MainServiceImpl implements MainService {
             }
 
             ArtEntity art = artRepository.findByQrcodeId(qrcodeId);
+            Long spotId = art.getSpotId();
+            SpotEntity spot = spotRepository.findBySpotId(spotId);
 
-            return GetArtByHashResponseDto.success(art);
+            return GetArtByHashResponseDto.success(art, spot);
 
         } catch (Exception e) {
             e.printStackTrace();
