@@ -11,6 +11,7 @@ public interface MainService {
 
     ResponseEntity<? super SaveMuseumResponseDto> saveMuseum(MultipartFile imageFile, SaveMuseumRequestDto requestDto);
     ResponseEntity<? super UpdateMuseumResponseDto> updateMuseum(MultipartFile imageFile, UpdateMuseumRequestDto requestDto);
+    ResponseEntity<? super UpdateMuseumResponseDto> updateMuseumWithNoImg(UpdateMuseumRequestDto requestDto);
     ResponseEntity<? super DeleteMuseumResponseDto> deleteMuseum(DeleteMuseumRequestDto requestDto);
     ResponseEntity<? super GetMuseumResponseDto> getMuseum(GetMuseumRequestDto requestDto);
     ResponseEntity<? super GetMuseumListResponseDto> getMuseumList();
