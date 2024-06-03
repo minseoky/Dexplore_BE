@@ -101,11 +101,17 @@ public class AdminController {
      * @return validationFailed, databaseError, idNotFound, artNotFound, museumNotFound, success
      */
     @PostMapping("/update-art")
-    public ResponseEntity<? super UpdateArtResponseDto> updateArt(@RequestParam("imageFile") MultipartFile imageFile,
+    public ResponseEntity<? super UpdateArtResponseDto> updateArt(@RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                                                                   @ModelAttribute @Valid UpdateArtRequestDto requestBody) {
-        ResponseEntity<? super UpdateArtResponseDto> response = mainService.updateArt(imageFile, requestBody);
-        log.info("[updateArt]");
-        return response;
+        if (imageFile == null || imageFile.isEmpty()) {
+            ResponseEntity<? super UpdateArtResponseDto> response = mainService.updateArtWithNoImg(requestBody);
+            log.info("[updateArt]");
+            return response;
+        } else {
+            ResponseEntity<? super UpdateArtResponseDto> response = mainService.updateArt(imageFile, requestBody);
+            log.info("[updateArt]");
+            return response;
+        }
     }
 
     /**
