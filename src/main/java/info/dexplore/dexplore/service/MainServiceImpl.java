@@ -616,6 +616,11 @@ public class MainServiceImpl implements MainService {
             String artYear = requestDto.getArtYear();
             String authName = requestDto.getAuthName();
 
+
+            Long oldQrcodeId = art.getQrcodeId();
+            qrcodeRepository.deleteByQrcodeId(oldQrcodeId);
+            Long newQrcodeId = qrcodeProvider.generateQrcode(artName);
+
             // 해당 imgUrl의 이미지 제거
             String imgUrl = art.getImgUrl();
             URL url = new URL(imgUrl);
@@ -639,7 +644,7 @@ public class MainServiceImpl implements MainService {
                     art.getArtId(),
                     art.getMuseumId(),
                     art.getSpotId(),
-                    art.getQrcodeId(),
+                    newQrcodeId,
                     art.getTtsId(),
                     artName,
                     artDescription,
@@ -655,12 +660,12 @@ public class MainServiceImpl implements MainService {
                 ttsProvider.updateTts(artName, artDescription, art.getTtsId());
             }
 
+            return UpdateArtResponseDto.success(newQrcodeId);
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
-
-        return ResponseDto.success();
     }
 
     @Override
@@ -716,11 +721,15 @@ public class MainServiceImpl implements MainService {
             String authName = requestDto.getAuthName();
             String imgUrl = art.getImgUrl();
 
+            Long oldQrcodeId = art.getQrcodeId();
+            qrcodeRepository.deleteByQrcodeId(oldQrcodeId);
+            Long newQrcodeId = qrcodeProvider.generateQrcode(artName);
+
             ArtEntity newArt = new ArtEntity(
                     art.getArtId(),
                     art.getMuseumId(),
                     art.getSpotId(),
-                    art.getQrcodeId(),
+                    newQrcodeId,
                     art.getTtsId(),
                     artName,
                     artDescription,
@@ -736,12 +745,14 @@ public class MainServiceImpl implements MainService {
                 ttsProvider.updateTts(artName, artDescription, art.getTtsId());
             }
 
+
+            return UpdateArtResponseDto.success(newQrcodeId);
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
 
-        return ResponseDto.success();
     }
 
     /**
