@@ -662,6 +662,87 @@ public class MainServiceImpl implements MainService {
         return ResponseDto.success();
     }
 
+    @Override
+    public ResponseEntity<? super UpdateArtResponseDto> updateArtWithNoImg(UpdateArtRequestDto requestDto) {
+        try {
+
+            String userId = findUserIdFromJwt();
+
+            boolean exists = userRepository.existsByUserId(userId);
+            if(!exists) {
+                return UpdateArtResponseDto.idNotFound();
+            }
+
+            Long museumId = requestDto.getMuseumId();
+            exists = museumRepository.existsByMuseumId(museumId);
+            if(!exists) {
+                return UpdateArtResponseDto.museumNotFound();
+            }
+
+            Long artId = requestDto.getArtId();
+            exists = artRepository.existsByArtId(artId);
+            if(!exists) {
+                return UpdateArtResponseDto.artNotFound();
+            }
+            //미술품 찾아오기
+            ArtEntity art = artRepository.findByArtId(requestDto.getArtId());
+
+            //미술품의 spot 정보 생성
+            BigDecimal latitude = requestDto.getLatitude();
+            BigDecimal longitude = requestDto.getLongitude();
+            String level = requestDto.getLevel();
+            BigDecimal edgeLatitude1 = requestDto.getEdgeLatitude1();
+            BigDecimal edgeLongitude1 = requestDto.getEdgeLongitude1();
+            BigDecimal edgeLatitude2 = requestDto.getEdgeLatitude2();
+            BigDecimal edgeLongitude2 = requestDto.getEdgeLongitude2();
+
+            SpotEntity spot = new SpotEntity(
+                    art.getSpotId(),
+                    latitude,
+                    longitude,
+                    level,
+                    edgeLatitude1,
+                    edgeLongitude1,
+                    edgeLatitude2,
+                    edgeLongitude2
+            );
+
+            spotRepository.save(spot);
+
+            String artName = requestDto.getArtName();
+            String artDescription = requestDto.getArtDescription();
+            String artYear = requestDto.getArtYear();
+            String authName = requestDto.getAuthName();
+            String imgUrl = art.getImgUrl();
+
+            ArtEntity newArt = new ArtEntity(
+                    art.getArtId(),
+                    art.getMuseumId(),
+                    art.getSpotId(),
+                    art.getQrcodeId(),
+                    art.getTtsId(),
+                    artName,
+                    artDescription,
+                    artYear,
+                    authName,
+                    imgUrl
+            );
+
+            artRepository.save(newArt);
+
+            //description이 변경된경우
+            if(art.getArtDescription().equals(artDescription)) {
+                ttsProvider.updateTts(artName, artDescription, art.getTtsId());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return ResponseDto.success();
+    }
+
     /**
      * 작품정보 삭제
      * @return validationFailed, databaseError, artNotFound, success

@@ -17,6 +17,7 @@ public interface MainService {
     ResponseEntity<? super GetMuseumListResponseDto> getMuseumList();
     ResponseEntity<? super SaveArtResponseDto> saveArt(MultipartFile imageFile, SaveArtRequestDto requestDto);
     ResponseEntity<? super UpdateArtResponseDto> updateArt(MultipartFile imageFile, UpdateArtRequestDto requestDto);
+    ResponseEntity<? super UpdateArtResponseDto> updateArtWithNoImg(UpdateArtRequestDto requestDto);
     ResponseEntity<? super DeleteArtResponseDto> deleteArt(DeleteArtRequestDto requestDto);
     ResponseEntity<? super GetArtsResponseDto> getArtList(GetArtsRequestDto requestDto);
     ResponseEntity<? super GetQrcodeListByMuseumIdResponseDto> getQrcodeListByMuseumId(GetQrcodeListByMuseumIdRequestDto requestDto);
