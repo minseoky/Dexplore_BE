@@ -33,4 +33,5 @@ public interface MainService {
     ResponseEntity<? super GetViewingRateResponseDto> getViewingRate(GetViewingRateRequestDto requestDto);
     ResponseEntity<? super BookmarkingResponseDto> bookmarking(BookmarkingRequestDto requestDto);
     ResponseEntity<? super GetBookmarkListResponseDto> getBookmarkList(GetBookmarkListRequestDto requestDto);
+    ResponseEntity<? super CheckBookmarkResponseDto> checkBookmark(CheckBookmarkRequestDto requestDto);
 }

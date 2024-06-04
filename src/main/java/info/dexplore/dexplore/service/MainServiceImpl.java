@@ -1265,6 +1265,32 @@ public class MainServiceImpl implements MainService {
             return ResponseDto.databaseError();
         }
     }
+    /**
+     * 요청자가 artId 작품을 북마크 했는지 여부
+     * @return validationFailed, databaseError, success
+     */
+    @Override
+    public ResponseEntity<? super CheckBookmarkResponseDto> checkBookmark(CheckBookmarkRequestDto requestDto) {
+        try {
+
+            Long artId = requestDto.getArtId();
+
+            boolean exists = artRepository.existsByArtId(artId);
+            if(!exists) {
+                return CheckBookmarkResponseDto.artNotFound();
+            }
+
+            String userId = findUserIdFromJwt();
+
+            boolean isBookmark = bookmarkRepository.existsByUserIdAndArtId(userId, artId);
+
+            return CheckBookmarkResponseDto.success(isBookmark);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+    }
 
     /**
      * 요청자의 JWT에서 userId 추출

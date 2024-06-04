@@ -143,6 +143,16 @@ public class UserController {
         log.info("[getBookmarkList]");
         return response;
     }
+    /**
+     * 북마크 여부 반환
+     * @return validationFailed, databaseError, success
+     */
+    @GetMapping("/check-bookmark")
+    public ResponseEntity<? super CheckBookmarkResponseDto> getBookmarkList(@ModelAttribute @Valid CheckBookmarkRequestDto requestDto) {
+        ResponseEntity<? super CheckBookmarkResponseDto> response = mainService.checkBookmark(requestDto);
+        log.info("[checkBookmark]");
+        return response;
+    }
 
 }
 
