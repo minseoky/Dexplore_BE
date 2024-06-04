@@ -24,10 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 
 @Slf4j
@@ -47,6 +44,7 @@ public class MainServiceImpl implements MainService {
     private final SpotRepository spotRepository;
     private final QrcodeRepository qrcodeRepository;
     private final TtsRepository ttsRepository;
+    private final FootprintRepository footprintRepository;
 
     private final QrcodeProvider qrcodeProvider;
     private final TtsProvider ttsProvider;
@@ -977,6 +975,37 @@ public class MainServiceImpl implements MainService {
             return ResponseDto.databaseError();
         }
     }
+    /**
+     * 사용자별 박물관 추천
+     * @return validationFailed, databaseError, success
+     */
+    @Override
+    public ResponseEntity<? super GetMuseumRecommendationsResponseDto> getMuseumRecommendations(GetMuseumRecommendationsRequestDto requestDto) {
+        try {
+
+            /*
+            추천 로직 개발 전, 무작위 추출로 대체
+             */
+            int amount = requestDto.getAmount();
+            List<MuseumEntity> all = museumRepository.findAll();
+            int size = all.size();
+
+            // 무작위로 섞기
+            Collections.shuffle(all);
+
+            // amount만큼 랜덤으로 뽑기
+            List<MuseumEntity> result = new ArrayList<>();
+            for (int i = 0; i < Math.min(amount, size); i++) {
+                result.add(all.get(i));
+            }
+
+            return GetMuseumRecommendationsResponseDto.success(result);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+    }
 
     /**
      * 사용자 위치에서 가장 가까운 작품 N개 반환
@@ -1049,6 +1078,12 @@ public class MainServiceImpl implements MainService {
             Long spotId = art.getSpotId();
             SpotEntity spot = spotRepository.findBySpotId(spotId);
 
+            String userId = findUserIdFromJwt();
+            exists = footprintRepository.existsByUserIdAndArtId(userId, artId);
+            if(!exists) {
+                footprintRepository.save(new FootprintEntity(userId, artId));
+            }
+
             return GetArtResponseDto.success(art,spot);
 
         } catch (Exception e) {
@@ -1080,6 +1115,13 @@ public class MainServiceImpl implements MainService {
             ArtEntity art = artRepository.findByQrcodeId(qrcodeId);
             Long spotId = art.getSpotId();
             SpotEntity spot = spotRepository.findBySpotId(spotId);
+
+            String userId = findUserIdFromJwt();
+            Long artId = art.getArtId();
+            exists = footprintRepository.existsByUserIdAndArtId(userId, artId);
+            if(!exists) {
+                footprintRepository.save(new FootprintEntity(userId, artId));
+            }
 
             return GetArtByHashResponseDto.success(art, spot);
 
@@ -1131,6 +1173,35 @@ public class MainServiceImpl implements MainService {
 
             QrcodeEntity qrcode = qrcodeRepository.findByQrcodeId(qrcodeId);
             return GetQrcodeResponseDto.success(qrcode);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+    }
+
+    /**
+     * 박물관 별 관람율
+     * @return validationFailed, databaseError, museumNotFound, success
+     */
+    @Override
+    public ResponseEntity<? super GetViewingRateResponseDto> getViewingRate(GetViewingRateRequestDto requestDto) {
+        try {
+
+            Long museumId = requestDto.getMuseumId();
+
+            boolean exists = museumRepository.existsByMuseumId(museumId);
+            if(!exists) {
+                return GetViewingRateResponseDto.museumNotFound();
+            }
+
+            int fullAmount = artRepository.countByMuseumId(museumId);
+            String userId = findUserIdFromJwt();
+            int amount = footprintRepository.countByUserId(userId);
+
+            double percentage = ((double)amount/(double)fullAmount)*100;
+
+            return GetViewingRateResponseDto.success(percentage);
 
         } catch (Exception e) {
             e.printStackTrace();
