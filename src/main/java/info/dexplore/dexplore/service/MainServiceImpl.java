@@ -1247,6 +1247,26 @@ public class MainServiceImpl implements MainService {
     }
 
     /**
+     * 요청자의 bookmark리스트 전송
+     * @return validationFailed, databaseError, success
+     */
+    @Override
+    public ResponseEntity<? super GetBookmarkListResponseDto> getBookmarkList(GetBookmarkListRequestDto requestDto) {
+        try {
+
+            String userId = findUserIdFromJwt();
+
+            List<BookmarkEntity> bookmarkList = bookmarkRepository.findAllByUserId(userId);
+
+            return GetBookmarkListResponseDto.success(bookmarkList);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+    }
+
+    /**
      * 요청자의 JWT에서 userId 추출
      * @return 요청자의 userId
      */
