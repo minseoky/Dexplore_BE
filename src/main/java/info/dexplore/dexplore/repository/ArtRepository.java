@@ -21,6 +21,6 @@ public interface ArtRepository extends JpaRepository<ArtEntity, String> {
 
     boolean existsByQrcodeId(Long qrcodeId);
 
-    int countByMuseumId(Long museumId);
+    Long countByMuseumId(Long museumId);
 
 }

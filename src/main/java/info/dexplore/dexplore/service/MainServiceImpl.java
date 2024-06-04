@@ -373,7 +373,7 @@ public class MainServiceImpl implements MainService {
                 ttsProvider.deleteTts(ttsUrl);
                 ttsRepository.deleteByTtsId(ttsId);
 
-
+                footprintRepository.deleteAllByArtId(artId);
 
             }
 
@@ -1195,9 +1195,9 @@ public class MainServiceImpl implements MainService {
                 return GetViewingRateResponseDto.museumNotFound();
             }
 
-            int fullAmount = artRepository.countByMuseumId(museumId);
+            Long fullAmount = artRepository.countByMuseumId(museumId);
             String userId = findUserIdFromJwt();
-            int amount = footprintRepository.countByUserId(userId);
+            Long amount = footprintRepository.countAllByUserId(userId);
 
             double percentage = ((double)amount/(double)fullAmount)*100;
 
