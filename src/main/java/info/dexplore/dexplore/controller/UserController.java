@@ -41,6 +41,16 @@ public class UserController {
         return response;
     }
     /**
+     * 가까운 박물관 정보 N개 가져오기
+     * @return validationFailed, databaseError, success
+     */
+    @GetMapping("/get-nearest-n-museums")
+    public ResponseEntity<? super GetNearestNMuseumsResponseDto> getNearestNMuseums(@ModelAttribute @Valid GetNearestNMuseumsRequestDto reqeustBody) {
+        ResponseEntity<? super GetNearestNMuseumsResponseDto> response = mainService.getNearestNMuseums(reqeustBody);
+        log.info("[getNearestNMuseums]");
+        return response;
+    }
+    /**
      * 가까운 작품 정보 N개 가져오기
      * @return validationFailed, museumNotFound, databaseError, success
      */

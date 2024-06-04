@@ -935,6 +935,50 @@ public class MainServiceImpl implements MainService {
     }
 
     /**
+     * 사용자 위치에서 가장 가까운 박물관 N개 반환
+     * @return validationFailed, databaseError, success
+     */
+    @Override
+    public ResponseEntity<? super GetNearestNMuseumsResponseDto> getNearestNMuseums(GetNearestNMuseumsRequestDto requestDto) {
+        try {
+            BigDecimal latitude = requestDto.getLatitude();
+            BigDecimal longitude = requestDto.getLongitude();
+
+            int amount = requestDto.getAmount();
+
+            List<MuseumEntity> museumList = museumRepository.findAll();
+
+            TreeMap<BigDecimal, MuseumEntity> distanceMap = new TreeMap<>();
+
+            for (MuseumEntity museumEntity : museumList) {
+                LocationEntity loc = locationRepository.findByLocationId(museumEntity.getLocationId());
+                BigDecimal locLatitude = loc.getLatitude();
+                BigDecimal locLongitude = loc.getLongitude();
+                BigDecimal distance = calculateDistance(latitude, longitude, locLatitude, locLongitude);
+
+                distanceMap.put(distance, museumEntity);
+            }
+
+            // TreeMap에서 가장 가까운 N개의 박물관을 선택
+            List<MuseumEntity> nearestMuseumList = new ArrayList<>(amount);
+            int count = 0;
+            for (Map.Entry<BigDecimal, MuseumEntity> entry : distanceMap.entrySet()) {
+                nearestMuseumList.add(entry.getValue());
+                count++;
+                if (count >= amount) {
+                    break;
+                }
+            }
+
+            return GetNearestNMuseumsResponseDto.success(nearestMuseumList);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+    }
+
+    /**
      * 사용자 위치에서 가장 가까운 작품 N개 반환
      * @return validationFailed, databaseError, museumNotFound, success
      */
@@ -952,12 +996,12 @@ public class MainServiceImpl implements MainService {
                 return GetNearestNArtsResponseDto.museumNotFound();
             }
 
-            List<ArtEntity> artEntities = artRepository.findAllByMuseumId(museumId);
+            List<ArtEntity> artList = artRepository.findAllByMuseumId(museumId);
 
             // TreeMap을 사용하여 거리를 기준으로 예술 작품을 자동으로 정렬
             TreeMap<BigDecimal, ArtEntity> distanceMap = new TreeMap<>();
 
-            for (ArtEntity artEntity : artEntities) {
+            for (ArtEntity artEntity : artList) {
                 SpotEntity spot = spotRepository.findBySpotId(artEntity.getSpotId());
                 BigDecimal spotLatitude = spot.getLatitude();
                 BigDecimal spotLongitude = spot.getLongitude();
