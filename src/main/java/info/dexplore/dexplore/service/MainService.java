@@ -24,9 +24,11 @@ public interface MainService {
     //--이하 user--
     ResponseEntity<? super GetNearestMuseumResponseDto> getNearestMuseum(GetNearestMuseumRequestDto requestDto);
     ResponseEntity<? super GetNearestNMuseumsResponseDto> getNearestNMuseums(GetNearestNMuseumsRequestDto requestDto);
+    ResponseEntity<? super GetMuseumRecommendationsResponseDto> getMuseumRecommendations(GetMuseumRecommendationsRequestDto requestDto);
     ResponseEntity<? super GetNearestNArtsResponseDto> getNearestNArtList(GetNearestNArtsRequestDto requestDto);
     ResponseEntity<? super GetArtResponseDto> getArt(GetArtRequestDto requestDto);
     ResponseEntity<? super GetArtByHashResponseDto> getArtByHash(GetArtByHashRequestDto requestDto);
     ResponseEntity<? super GetTtsResponseDto> getTts(GetTtsRequestDto requestDto);
     ResponseEntity<? super GetQrcodeResponseDto> getQrcode(GetQrcodeRequestDto requestDto);
+    ResponseEntity<? super GetViewingRateResponseDto> getViewingRate(GetViewingRateRequestDto requestDto);
 }

@@ -51,6 +51,16 @@ public class UserController {
         return response;
     }
     /**
+     * 추천 박물관 리스트 추천
+     * @return validationFailed, databaseError, success
+     */
+    @GetMapping("/get-museum-recommendations")
+    public ResponseEntity<? super GetMuseumRecommendationsResponseDto> getNearestNMuseums(@ModelAttribute @Valid GetMuseumRecommendationsRequestDto reqeustBody) {
+        ResponseEntity<? super GetMuseumRecommendationsResponseDto> response = mainService.getMuseumRecommendations(reqeustBody);
+        log.info("[getMuseumRecommendations]");
+        return response;
+    }
+    /**
      * 가까운 작품 정보 N개 가져오기
      * @return validationFailed, museumNotFound, databaseError, success
      */
@@ -101,6 +111,16 @@ public class UserController {
     public ResponseEntity<? super GetQrcodeResponseDto> getQrcode(@ModelAttribute @Valid GetQrcodeRequestDto requestDto) {
         ResponseEntity<? super GetQrcodeResponseDto> response = mainService.getQrcode(requestDto);
         log.info("[getQrcode]");
+        return response;
+    }
+    /**
+     * qrcode 조회하기
+     * @return validationFailed, databaseError, museumNotFound, success
+     */
+    @GetMapping("/get-viewing-rate")
+    public ResponseEntity<? super GetViewingRateResponseDto> getViewingRate(@ModelAttribute @Valid GetViewingRateRequestDto requestDto) {
+        ResponseEntity<? super GetViewingRateResponseDto> response = mainService.getViewingRate(requestDto);
+        log.info("[getViewingRate]");
         return response;
     }
 
