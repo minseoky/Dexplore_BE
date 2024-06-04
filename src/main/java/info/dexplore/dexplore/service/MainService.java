@@ -23,6 +23,7 @@ public interface MainService {
     ResponseEntity<? super GetQrcodeListByMuseumIdResponseDto> getQrcodeListByMuseumId(GetQrcodeListByMuseumIdRequestDto requestDto);
     //--이하 user--
     ResponseEntity<? super GetNearestMuseumResponseDto> getNearestMuseum(GetNearestMuseumRequestDto requestDto);
+    ResponseEntity<? super GetNearestNMuseumsResponseDto> getNearestNMuseums(GetNearestNMuseumsRequestDto requestDto);
     ResponseEntity<? super GetNearestNArtsResponseDto> getNearestNArtList(GetNearestNArtsRequestDto requestDto);
     ResponseEntity<? super GetArtResponseDto> getArt(GetArtRequestDto requestDto);
     ResponseEntity<? super GetArtByHashResponseDto> getArtByHash(GetArtByHashRequestDto requestDto);
