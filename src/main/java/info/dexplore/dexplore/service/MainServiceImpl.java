@@ -45,6 +45,7 @@ public class MainServiceImpl implements MainService {
     private final QrcodeRepository qrcodeRepository;
     private final TtsRepository ttsRepository;
     private final FootprintRepository footprintRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     private final QrcodeProvider qrcodeProvider;
     private final TtsProvider ttsProvider;
@@ -374,6 +375,7 @@ public class MainServiceImpl implements MainService {
                 ttsRepository.deleteByTtsId(ttsId);
 
                 footprintRepository.deleteAllByArtId(artId);
+                bookmarkRepository.deleteAllByArtId(artId);
 
             }
 
@@ -791,13 +793,16 @@ public class MainServiceImpl implements MainService {
             ttsProvider.deleteTts(ttsUrl);
             ttsRepository.deleteByTtsId(ttsId);
 
+            footprintRepository.deleteAllByArtId(artId);
+            bookmarkRepository.deleteAllByArtId(artId);
+
+            return ResponseDto.success();
 
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
 
-        return ResponseDto.success();
     }
 
 
@@ -1202,6 +1207,38 @@ public class MainServiceImpl implements MainService {
             double percentage = ((double)amount/(double)fullAmount)*100;
 
             return GetViewingRateResponseDto.success(percentage);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+    }
+
+    /**
+     * 북마크 토글
+     * @return validationFailed, databaseError, artNotFound, success
+     */
+    @Override
+    public ResponseEntity<? super BookmarkingResponseDto> bookmarking(BookmarkingRequestDto requestDto) {
+        try {
+
+            Long artId = requestDto.getArtId();
+            boolean exists = artRepository.existsByArtId(artId);
+            if(!exists) {
+                return BookmarkingResponseDto.artNotFound();
+            }
+
+            String userId = findUserIdFromJwt();
+
+            exists = bookmarkRepository.existsByUserIdAndArtId(userId, artId);
+            if(exists) {
+                bookmarkRepository.deleteByUserIdAndArtId(userId, artId);
+            } else {
+                bookmarkRepository.save(new BookmarkEntity(userId, artId));
+            }
+            return BookmarkingResponseDto.success(!exists);
+
+
 
         } catch (Exception e) {
             e.printStackTrace();

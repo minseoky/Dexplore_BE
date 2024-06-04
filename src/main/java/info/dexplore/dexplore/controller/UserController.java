@@ -123,6 +123,16 @@ public class UserController {
         log.info("[getViewingRate]");
         return response;
     }
+    /**
+     * 북마크하기
+     * @return validationFailed, databaseError, artNotFound, success
+     */
+    @GetMapping("/bookmarking")
+    public ResponseEntity<? super BookmarkingResponseDto> getViewingRate(@ModelAttribute @Valid BookmarkingRequestDto requestDto) {
+        ResponseEntity<? super BookmarkingResponseDto> response = mainService.bookmarking(requestDto);
+        log.info("[bookmarking]");
+        return response;
+    }
 
 }
 

@@ -31,4 +31,5 @@ public interface MainService {
     ResponseEntity<? super GetTtsResponseDto> getTts(GetTtsRequestDto requestDto);
     ResponseEntity<? super GetQrcodeResponseDto> getQrcode(GetQrcodeRequestDto requestDto);
     ResponseEntity<? super GetViewingRateResponseDto> getViewingRate(GetViewingRateRequestDto requestDto);
+    ResponseEntity<? super BookmarkingResponseDto> bookmarking(BookmarkingRequestDto requestDto);
 }
