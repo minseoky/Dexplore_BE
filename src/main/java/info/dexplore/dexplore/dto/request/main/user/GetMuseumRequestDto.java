@@ -1,4 +1,4 @@
-package info.dexplore.dexplore.dto.request.main.admin;
+package info.dexplore.dexplore.dto.request.main.user;
 
 
 import jakarta.validation.constraints.NotNull;

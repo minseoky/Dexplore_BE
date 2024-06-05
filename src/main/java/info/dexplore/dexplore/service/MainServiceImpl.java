@@ -408,44 +408,7 @@ public class MainServiceImpl implements MainService {
      * museum_id로 단일 박물관 찾기
      * @return validationFailed, databaseError, museumNotFound, idNotMatching, success
      */
-    @Override
-    public ResponseEntity<? super GetMuseumResponseDto> getMuseum(GetMuseumRequestDto requestDto) {
 
-
-        try {
-            MuseumEntity museum;
-            LocationEntity location;
-
-            Long museumId = requestDto.getMuseumId();
-            boolean exists = museumRepository.existsByMuseumId(museumId);
-
-            if (!exists) {
-                return GetMuseumResponseDto.museumNotFound();
-            }
-            else {
-                museum = museumRepository.findByMuseumId(museumId);
-
-                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                if (authentication != null && authentication.isAuthenticated()) {
-                    String userId = authentication.getName();
-
-                    //요청한 userid와 박물관 오너id가 매칭되는지 확인
-                    if(!museum.getUserId().equals(userId)) {
-                        return GetMuseumResponseDto.idNotMatching();
-                    }
-                }
-
-                location = locationRepository.findByLocationId(museum.getLocationId());
-
-            }
-
-            return GetMuseumResponseDto.success(museum, location);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.databaseError();
-        }
-    }
 
     /**
      * user_id로 모든 박물관 찾기
@@ -884,6 +847,36 @@ public class MainServiceImpl implements MainService {
     }
 
     // -----------------------------------------------
+
+    @Override
+    public ResponseEntity<? super GetMuseumResponseDto> getMuseum(GetMuseumRequestDto requestDto) {
+
+
+        try {
+            MuseumEntity museum;
+            LocationEntity location;
+
+            Long museumId = requestDto.getMuseumId();
+            boolean exists = museumRepository.existsByMuseumId(museumId);
+
+            if (!exists) {
+                return GetMuseumResponseDto.museumNotFound();
+            }
+            else {
+                museum = museumRepository.findByMuseumId(museumId);
+
+
+                location = locationRepository.findByLocationId(museum.getLocationId());
+
+            }
+
+            return GetMuseumResponseDto.success(museum, location);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+    }
 
     /**
      * 사용자 위치에서 가장 가까운 박물관 반환
