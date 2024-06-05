@@ -72,6 +72,16 @@ public class UserController {
         return response;
     }
     /**
+     * 박물관별 작품 정보 모두 가져오기
+     * @return validationFailed, museumNotFound, databaseError, success
+     */
+    @GetMapping("/get-arts")
+    public ResponseEntity<? super GetAllArtsByMuseumIdResponseDto> getAllArts(@ModelAttribute @Valid GetAllArtsByMuseumIdRequestDto reqeustBody) {
+        ResponseEntity<? super GetAllArtsByMuseumIdResponseDto> response = mainService.getAllArts(reqeustBody);
+        log.info("[getAllArts]");
+        return response;
+    }
+    /**
      * 가까운 작품 정보 N개 가져오기
      * @return validationFailed, museumNotFound, databaseError, success
      */
