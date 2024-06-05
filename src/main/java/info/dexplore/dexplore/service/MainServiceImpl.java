@@ -525,7 +525,7 @@ public class MainServiceImpl implements MainService {
 
     /**
      * museum_id의 박물관의 작품정보 수정
-     * @return validationFailed, databaseError, idNotFound, artNotFound, museumNotFound, success
+     * @return validationFailed, databaseError, idNotFound, idNotMatching, artNotFound, museumNotFound, success
      */
     @Override
     @Transactional
@@ -553,6 +553,10 @@ public class MainServiceImpl implements MainService {
             //미술품 찾아오기
             ArtEntity art = artRepository.findByArtId(requestDto.getArtId());
 
+            MuseumEntity museum = museumRepository.findByMuseumId(museumId);
+            if(!museum.getUserId().equals(userId)) {
+                return UpdateArtResponseDto.idNotMatching();
+            }
             //미술품의 spot 정보 생성
             BigDecimal latitude = requestDto.getLatitude();
             BigDecimal longitude = requestDto.getLongitude();
@@ -742,7 +746,7 @@ public class MainServiceImpl implements MainService {
             Long museumId = art.getMuseumId();
             MuseumEntity museum = museumRepository.findByMuseumId(museumId);
             if(!museum.getUserId().equals(userId)) {
-                DeleteArtResponseDto.idNotMatching();
+                return DeleteArtResponseDto.idNotMatching();
             }
 
             Long qrcodeId = art.getQrcodeId();
