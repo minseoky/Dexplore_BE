@@ -2,7 +2,9 @@ package info.dexplore.dexplore.controller;
 
 
 import info.dexplore.dexplore.dto.request.main.admin.*;
+import info.dexplore.dexplore.dto.request.main.user.GetMuseumRequestDto;
 import info.dexplore.dexplore.dto.response.main.admin.*;
+import info.dexplore.dexplore.dto.response.main.user.GetMuseumResponseDto;
 import info.dexplore.dexplore.service.MainService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -62,16 +64,6 @@ public class AdminController {
         return response;
     }
 
-    /**
-     * 박물관 정보 가져오기
-     * @return validationFailed, museumNotFound, IdNotMatching, databaseError, success
-     */
-    @GetMapping("/get-museum")
-    public ResponseEntity<? super GetMuseumResponseDto> getMuseum(@ModelAttribute @Valid GetMuseumRequestDto requestBody) {
-        ResponseEntity<? super GetMuseumResponseDto> response = mainService.getMuseum(requestBody);
-        log.info("[getMuseum]: {museumId: {}}", requestBody.getMuseumId());
-        return response;
-    }
 
     /**
      * 모든 박물관 정보 가져오기

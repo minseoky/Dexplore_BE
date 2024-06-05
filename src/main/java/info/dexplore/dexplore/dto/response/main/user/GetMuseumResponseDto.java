@@ -1,4 +1,4 @@
-package info.dexplore.dexplore.dto.response.main.admin;
+package info.dexplore.dexplore.dto.response.main.user;
 
 import info.dexplore.dexplore.common.ResponseCode;
 import info.dexplore.dexplore.common.ResponseMessage;
@@ -24,11 +24,6 @@ public class GetMuseumResponseDto extends ResponseDto {
     public static ResponseEntity<ResponseDto> museumNotFound() {
         ResponseDto responseBody = new ResponseDto(ResponseCode.MUSEUM_NOT_FOUND, ResponseMessage.MUSEUM_NOT_FOUND);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
-    }
-
-    public static ResponseEntity<ResponseDto> idNotMatching() {
-        ResponseDto responseBody = new ResponseDto(ResponseCode.ID_NOT_MATCHING, ResponseMessage.ID_NOT_MATCHING);
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseBody);
     }
 
     public static ResponseEntity<ResponseDto> success(MuseumEntity museum, LocationEntity location) {

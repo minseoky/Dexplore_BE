@@ -13,7 +13,6 @@ public interface MainService {
     ResponseEntity<? super UpdateMuseumResponseDto> updateMuseum(MultipartFile imageFile, UpdateMuseumRequestDto requestDto);
     ResponseEntity<? super UpdateMuseumResponseDto> updateMuseumWithNoImg(UpdateMuseumRequestDto requestDto);
     ResponseEntity<? super DeleteMuseumResponseDto> deleteMuseum(DeleteMuseumRequestDto requestDto);
-    ResponseEntity<? super GetMuseumResponseDto> getMuseum(GetMuseumRequestDto requestDto);
     ResponseEntity<? super GetMuseumListResponseDto> getMuseumList();
     ResponseEntity<? super SaveArtResponseDto> saveArt(MultipartFile imageFile, SaveArtRequestDto requestDto);
     ResponseEntity<? super UpdateArtResponseDto> updateArt(MultipartFile imageFile, UpdateArtRequestDto requestDto);
@@ -22,6 +21,7 @@ public interface MainService {
     ResponseEntity<? super GetArtsResponseDto> getArtList(GetArtsRequestDto requestDto);
     ResponseEntity<? super GetQrcodeListByMuseumIdResponseDto> getQrcodeListByMuseumId(GetQrcodeListByMuseumIdRequestDto requestDto);
     //--이하 user--
+    ResponseEntity<? super GetMuseumResponseDto> getMuseum(GetMuseumRequestDto requestDto);
     ResponseEntity<? super GetNearestMuseumResponseDto> getNearestMuseum(GetNearestMuseumRequestDto requestDto);
     ResponseEntity<? super GetNearestNMuseumsResponseDto> getNearestNMuseums(GetNearestNMuseumsRequestDto requestDto);
     ResponseEntity<? super GetMuseumRecommendationsResponseDto> getMuseumRecommendations(GetMuseumRecommendationsRequestDto requestDto);
