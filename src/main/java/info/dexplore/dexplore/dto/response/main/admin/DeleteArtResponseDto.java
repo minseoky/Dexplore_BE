@@ -12,6 +12,11 @@ public class DeleteArtResponseDto extends ResponseDto {
         super();
     }
 
+    public static ResponseEntity<ResponseDto> idNotMatching() {
+        ResponseDto responseBody = new ResponseDto(ResponseCode.ID_NOT_MATCHING, ResponseMessage.ID_NOT_MATCHING);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseBody);
+    }
+
     public static ResponseEntity<ResponseDto> artNotFound() {
         ResponseDto responseBody = new ResponseDto(ResponseCode.ART_NOT_FOUND, ResponseMessage.ART_NOT_FOUND);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);

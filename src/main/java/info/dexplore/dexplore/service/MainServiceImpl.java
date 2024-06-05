@@ -721,7 +721,7 @@ public class MainServiceImpl implements MainService {
 
     /**
      * 작품정보 삭제
-     * @return validationFailed, databaseError, artNotFound, success
+     * @return validationFailed, databaseError, artNotFound, idNotMatching, success
      */
     @Override
     @Transactional
@@ -736,7 +736,14 @@ public class MainServiceImpl implements MainService {
                 return DeleteArtResponseDto.artNotFound();
             }
 
+
             ArtEntity art = artRepository.findByArtId(artId);
+            String userId = findUserIdFromJwt();
+            Long museumId = art.getMuseumId();
+            MuseumEntity museum = museumRepository.findByMuseumId(museumId);
+            if(!museum.getUserId().equals(userId)) {
+                DeleteArtResponseDto.idNotMatching();
+            }
 
             Long qrcodeId = art.getQrcodeId();
             Long spotId = art.getSpotId();
