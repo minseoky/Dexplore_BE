@@ -36,7 +36,7 @@ public class AdminController {
 
     /**
      * 박물관 정보 수정
-     * @returnvalidationFailed, idNotFound, museumNotFound, databaseError, success
+     * @returnvalidationFailed, idNotFound, museumNotFound, idNotMatching, databaseError, success
      */
     @PostMapping("/update-museum")
     public ResponseEntity<? super UpdateMuseumResponseDto> updateMuseum(@RequestParam(value = "imageFile", required = false) MultipartFile imageFile,

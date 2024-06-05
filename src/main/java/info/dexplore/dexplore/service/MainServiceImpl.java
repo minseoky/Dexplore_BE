@@ -147,7 +147,7 @@ public class MainServiceImpl implements MainService {
 
     /**
      * 박물관 정보 수정하기
-     * @return validationFailed, databaseError, idNotFound, success
+     * @return validationFailed, databaseError, idNotMatching, idNotFound, success
      */
     @Override
     @Transactional
@@ -173,6 +173,10 @@ public class MainServiceImpl implements MainService {
 
             MuseumEntity museum = museumRepository.findByMuseumId(requestDto.getMuseumId());
             LocationEntity location = locationRepository.findByLocationId(museum.getLocationId());
+
+            if(!museum.getUserId().equals(userId)) {
+                return UpdateMuseumResponseDto.idNotMatching();
+            }
 
             String entPrice = requestDto.getEntPrice();
             String museumEmail = requestDto.getMuseumEmail();
@@ -269,6 +273,10 @@ public class MainServiceImpl implements MainService {
 
             MuseumEntity museum = museumRepository.findByMuseumId(requestDto.getMuseumId());
             LocationEntity location = locationRepository.findByLocationId(museum.getLocationId());
+
+            if(!museum.getUserId().equals(userId)) {
+                return UpdateMuseumResponseDto.idNotMatching();
+            }
 
             String entPrice = requestDto.getEntPrice();
             String museumEmail = requestDto.getMuseumEmail();
@@ -660,6 +668,11 @@ public class MainServiceImpl implements MainService {
             }
             //미술품 찾아오기
             ArtEntity art = artRepository.findByArtId(requestDto.getArtId());
+
+            MuseumEntity museum = museumRepository.findByMuseumId(museumId);
+            if(!museum.getUserId().equals(userId)) {
+                return UpdateArtResponseDto.idNotMatching();
+            }
 
             //미술품의 spot 정보 생성
             BigDecimal latitude = requestDto.getLatitude();
