@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -1049,6 +1050,32 @@ public class MainServiceImpl implements MainService {
             }
 
             return GetNearestNArtsResponseDto.success(nearestArtEntities);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+    }
+
+    /**
+     * 박물관 별 작품 모두 반환
+     * @return validationFailed, databaseError, museumNotFound, success
+     */
+    @Override
+    public ResponseEntity<? super GetAllArtsByMuseumIdResponseDto> getAllArts(GetAllArtsByMuseumIdRequestDto requestDto) {
+        try {
+
+            Long museumId = requestDto.getMuseumId();
+
+            boolean exists = museumRepository.existsByMuseumId(museumId);
+            if(!exists) {
+                return GetAllArtsByMuseumIdResponseDto.museumNotFound();
+            }
+
+            List<ArtEntity> artList = artRepository.findAllByMuseumId(museumId);
+
+            return GetAllArtsByMuseumIdResponseDto.success(artList);
+
 
         } catch (Exception e) {
             e.printStackTrace();
