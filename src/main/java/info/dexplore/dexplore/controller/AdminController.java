@@ -90,7 +90,7 @@ public class AdminController {
 
     /**
      * 작품정보 수정하기
-     * @return validationFailed, databaseError, idNotFound, artNotFound, museumNotFound, success
+     * @return validationFailed, databaseError, idNotFound, idNotMatching, artNotFound, museumNotFound, success
      */
     @PostMapping("/update-art")
     public ResponseEntity<? super UpdateArtResponseDto> updateArt(@RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
