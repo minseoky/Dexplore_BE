@@ -1230,7 +1230,7 @@ public class MainServiceImpl implements MainService {
     }
 
     /**
-     * 박물관 별 관람율
+     * 박물관 별 관람률
      * @return validationFailed, databaseError, museumNotFound, success
      */
     @Override
@@ -1244,11 +1244,16 @@ public class MainServiceImpl implements MainService {
                 return GetViewingRateResponseDto.museumNotFound();
             }
 
-            Long fullAmount = artRepository.countByMuseumId(museumId);
+            int amount = 0;
             String userId = findUserIdFromJwt();
-            Long amount = footprintRepository.countAllByUserId(userId);
+            List<ArtEntity> artList = artRepository.findAllByMuseumId(museumId);
+            for(ArtEntity art:artList) {
+                if(footprintRepository.existsByUserIdAndArtId(userId, art.getArtId())) {
+                    amount++;
+                }
+            }
 
-            double percentage = ((double)amount/(double)fullAmount)*100;
+            double percentage = ((double)amount/(double)artList.size())*100;
 
             return GetViewingRateResponseDto.success(percentage);
 

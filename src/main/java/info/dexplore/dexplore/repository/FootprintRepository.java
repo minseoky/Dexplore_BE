@@ -12,4 +12,5 @@ public interface FootprintRepository extends JpaRepository<FootprintEntity, Stri
     void deleteAllByArtId(Long artId);
 
 
+
 }
