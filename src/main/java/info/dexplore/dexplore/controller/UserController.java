@@ -165,6 +165,16 @@ public class UserController {
         return response;
     }
     /**
+     * 북마크작품리스트 반환
+     * @return validationFailed, databaseError, success
+     */
+    @GetMapping("/get-bookmarked-arts")
+    public ResponseEntity<? super GetBookmarkedArtsResponseDto> getBookmarkList(@ModelAttribute @Valid GetBookmarkedArtsRequestDto requestDto) {
+        ResponseEntity<? super GetBookmarkedArtsResponseDto> response = mainService.getBookmarkedArtList(requestDto);
+        log.info("[getBookmarkArtList]");
+        return response;
+    }
+    /**
      * 북마크 여부 반환
      * @return validationFailed, databaseError, success
      */
