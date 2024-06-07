@@ -148,8 +148,8 @@ public class UserController {
      * 북마크하기
      * @return validationFailed, databaseError, artNotFound, success
      */
-    @GetMapping("/bookmarking")
-    public ResponseEntity<? super BookmarkingResponseDto> getViewingRate(@ModelAttribute @Valid BookmarkingRequestDto requestDto) {
+    @PostMapping("/bookmarking")
+    public ResponseEntity<? super BookmarkingResponseDto> getViewingRate(@RequestBody @Valid BookmarkingRequestDto requestDto) {
         ResponseEntity<? super BookmarkingResponseDto> response = mainService.bookmarking(requestDto);
         log.info("[bookmarking]");
         return response;
