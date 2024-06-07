@@ -375,6 +375,10 @@ public class MainServiceImpl implements MainService {
                 String[] parts = url.getPath().split("/", 2);
                 String key = parts[1]; // 파일 키(경로) 추출
                 amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
+
+                footprintRepository.deleteAllByArtId(artId);
+                bookmarkRepository.deleteAllByArtId(artId);
+
                 artRepository.deleteByArtId(artId);
 
                 qrcodeRepository.deleteByQrcodeId(qrcodeId);
@@ -383,8 +387,6 @@ public class MainServiceImpl implements MainService {
                 ttsProvider.deleteTts(ttsUrl);
                 ttsRepository.deleteByTtsId(ttsId);
 
-                footprintRepository.deleteAllByArtId(artId);
-                bookmarkRepository.deleteAllByArtId(artId);
 
             }
 
@@ -628,8 +630,11 @@ public class MainServiceImpl implements MainService {
                     authName,
                     newImgUrl
             );
+            footprintRepository.deleteAllByArtId(artId);
+            bookmarkRepository.deleteAllByArtId(artId);
 
             artRepository.save(newArt);
+
 
             //description이 변경된경우
             if(art.getArtDescription().equals(artDescription)) {
@@ -773,7 +778,12 @@ public class MainServiceImpl implements MainService {
             String[] parts = url.getPath().split("/", 2);
             String key = parts[1]; // 파일 키(경로) 추출
             amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
+
+            footprintRepository.deleteAllByArtId(artId);
+            bookmarkRepository.deleteAllByArtId(artId);
+
             artRepository.deleteByArtId(artId);
+
 
             qrcodeRepository.deleteByQrcodeId(qrcodeId);
             spotRepository.deleteBySpotId(spotId);
@@ -781,8 +791,6 @@ public class MainServiceImpl implements MainService {
             ttsProvider.deleteTts(ttsUrl);
             ttsRepository.deleteByTtsId(ttsId);
 
-            footprintRepository.deleteAllByArtId(artId);
-            bookmarkRepository.deleteAllByArtId(artId);
 
             return ResponseDto.success();
 
