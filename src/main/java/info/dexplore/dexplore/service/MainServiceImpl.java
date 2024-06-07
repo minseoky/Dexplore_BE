@@ -251,6 +251,7 @@ public class MainServiceImpl implements MainService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<? super UpdateMuseumResponseDto> updateMuseumWithNoImg(UpdateMuseumRequestDto requestDto) {
         try {
 
@@ -650,6 +651,7 @@ public class MainServiceImpl implements MainService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<? super UpdateArtResponseDto> updateArtWithNoImg(UpdateArtRequestDto requestDto) {
         try {
 
@@ -1276,6 +1278,7 @@ public class MainServiceImpl implements MainService {
      * @return validationFailed, databaseError, artNotFound, success
      */
     @Override
+    @Transactional
     public ResponseEntity<? super BookmarkingResponseDto> bookmarking(BookmarkingRequestDto requestDto) {
         try {
 

@@ -2,7 +2,9 @@ package info.dexplore.dexplore.repository;
 
 import info.dexplore.dexplore.entity.QrcodeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface QrcodeRepository extends JpaRepository<QrcodeEntity, String> {
     QrcodeEntity findByQrcodeHashkey(String qrcodeHashKey);
     QrcodeEntity findByQrcodeName(String qrcodeName);
