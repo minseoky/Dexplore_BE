@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -1325,6 +1324,33 @@ public class MainServiceImpl implements MainService {
             return ResponseDto.databaseError();
         }
     }
+    /**
+     * 요청자의 bookmark된 작품 리스트 전송
+     * @return validationFailed, databaseError, success
+     */
+    @Override
+    public ResponseEntity<? super GetBookmarkedArtsResponseDto> getBookmarkedArtList(GetBookmarkedArtsRequestDto requestDto) {
+        try {
+
+            String userId = findUserIdFromJwt();
+
+            List<BookmarkEntity> bookmarkList = bookmarkRepository.findAllByUserId(userId);
+            List<ArtEntity> artList = new ArrayList<>();
+            for(BookmarkEntity b: bookmarkList) {
+                Long artId = b.getArtId();
+                ArtEntity art = artRepository.findByArtId(artId);
+                artList.add(art);
+            }
+
+            return GetBookmarkedArtsResponseDto.success(artList);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+    }
+
     /**
      * 요청자가 artId 작품을 북마크 했는지 여부
      * @return validationFailed, databaseError, success
