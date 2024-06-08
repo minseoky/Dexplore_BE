@@ -38,12 +38,8 @@ public class TtsProvider {
             // TTS 변환 용 input 설정, 여기서 input은 작품 설명
             SynthesisInput input = SynthesisInput.newBuilder().setText(artDescription).build();
 
-            //작품 설명이 한글인지 영어인지 체크 및 언어 코드 설정
-            String languageCode = "";
-            boolean languageCheck = artDescription.matches(".*[ㄱ-ㅎㅏ-ㅣ가-힣]+.*");
-            if(languageCheck) languageCode = "ko-KR";
-            else languageCode = "en-US";
-
+            String languageCode = "ko-KR";
+            
             VoiceSelectionParams voice = VoiceSelectionParams.newBuilder()
                     .setLanguageCode(languageCode)
                     .setSsmlGender(SsmlVoiceGender.NEUTRAL)
@@ -90,11 +86,7 @@ public class TtsProvider {
             // TTS 변환 용 input 설정, 여기서 input은 작품 설명
             SynthesisInput input = SynthesisInput.newBuilder().setText(newDescription).build();
 
-            //작품 설명이 한글인지 영어인지 체크 및 언어 코드 설정
-            String languageCode = "";
-            boolean languageCheck = newDescription.matches(".*[ㄱ-ㅎㅏ-ㅣ가-힣]+.*");
-            if (languageCheck) languageCode = "ko-KR";
-            else languageCode = "en-US";
+            String languageCode = "ko-KR";
 
             VoiceSelectionParams voice = VoiceSelectionParams.newBuilder()
                     .setLanguageCode(languageCode)
