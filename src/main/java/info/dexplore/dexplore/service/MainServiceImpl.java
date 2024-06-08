@@ -978,7 +978,7 @@ public class MainServiceImpl implements MainService {
 
             List<MuseumEntity> museumList = museumRepository.findAll();
 
-            TreeMap<BigDecimal, MuseumEntity> distanceMap = new TreeMap<>();
+            TreeMap<BigDecimal, List<MuseumEntity>> distanceMap = new TreeMap<>();
 
             for (MuseumEntity museumEntity : museumList) {
                 LocationEntity loc = locationRepository.findByLocationId(museumEntity.getLocationId());
@@ -986,17 +986,18 @@ public class MainServiceImpl implements MainService {
                 BigDecimal locLongitude = loc.getLongitude();
                 BigDecimal distance = calculateDistance(latitude, longitude, locLatitude, locLongitude);
 
-                distanceMap.put(distance, museumEntity);
+                // 동일한 거리를 가진 박물관들을 리스트에 저장
+                distanceMap.computeIfAbsent(distance, k -> new ArrayList<>()).add(museumEntity);
             }
 
             // TreeMap에서 가장 가까운 N개의 박물관을 선택
-            List<MuseumEntity> nearestMuseumList = new ArrayList<>(amount);
-            int count = 0;
-            for (Map.Entry<BigDecimal, MuseumEntity> entry : distanceMap.entrySet()) {
-                nearestMuseumList.add(entry.getValue());
-                count++;
-                if (count >= amount) {
-                    break;
+            List<MuseumEntity> nearestMuseumList = new ArrayList<>();
+            for (Map.Entry<BigDecimal, List<MuseumEntity>> entry : distanceMap.entrySet()) {
+                for (MuseumEntity museumEntity : entry.getValue()) {
+                    nearestMuseumList.add(museumEntity);
+                    if (nearestMuseumList.size() >= amount) {
+                        return GetNearestNMuseumsResponseDto.success(nearestMuseumList);
+                    }
                 }
             }
 
@@ -1053,14 +1054,14 @@ public class MainServiceImpl implements MainService {
             int amount = requestDto.getAmount();
 
             boolean exists = museumRepository.existsByMuseumId(museumId);
-            if(!exists) {
+            if (!exists) {
                 return GetNearestNArtsResponseDto.museumNotFound();
             }
 
             List<ArtEntity> artList = artRepository.findAllByMuseumId(museumId);
 
             // TreeMap을 사용하여 거리를 기준으로 예술 작품을 자동으로 정렬
-            TreeMap<BigDecimal, ArtEntity> distanceMap = new TreeMap<>();
+            TreeMap<BigDecimal, List<ArtEntity>> distanceMap = new TreeMap<>();
 
             for (ArtEntity artEntity : artList) {
                 SpotEntity spot = spotRepository.findBySpotId(artEntity.getSpotId());
@@ -1068,17 +1069,18 @@ public class MainServiceImpl implements MainService {
                 BigDecimal spotLongitude = spot.getLongitude();
                 BigDecimal distance = calculateDistance(latitude, longitude, spotLatitude, spotLongitude);
 
-                distanceMap.put(distance, artEntity);
+                // 동일한 거리를 가진 예술 작품들을 리스트에 저장
+                distanceMap.computeIfAbsent(distance, k -> new ArrayList<>()).add(artEntity);
             }
 
             // TreeMap에서 가장 가까운 N개의 예술 작품을 선택
-            List<ArtEntity> nearestArtEntities = new ArrayList<>(amount);
-            int count = 0;
-            for (Map.Entry<BigDecimal, ArtEntity> entry : distanceMap.entrySet()) {
-                nearestArtEntities.add(entry.getValue());
-                count++;
-                if (count >= amount) {
-                    break;
+            List<ArtEntity> nearestArtEntities = new ArrayList<>();
+            for (Map.Entry<BigDecimal, List<ArtEntity>> entry : distanceMap.entrySet()) {
+                for (ArtEntity artEntity : entry.getValue()) {
+                    nearestArtEntities.add(artEntity);
+                    if (nearestArtEntities.size() >= amount) {
+                        return GetNearestNArtsResponseDto.success(nearestArtEntities);
+                    }
                 }
             }
 
