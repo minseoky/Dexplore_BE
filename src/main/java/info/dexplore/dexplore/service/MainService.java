@@ -36,4 +36,5 @@ public interface MainService {
     ResponseEntity<? super GetBookmarkListResponseDto> getBookmarkList(GetBookmarkListRequestDto requestDto);
     ResponseEntity<? super GetBookmarkedArtsResponseDto> getBookmarkedArtList(GetBookmarkedArtsRequestDto requestDto);
     ResponseEntity<? super CheckBookmarkResponseDto> checkBookmark(CheckBookmarkRequestDto requestDto);
+    ResponseEntity<? super GetFootprintStateResponseDto> getFootprintState(GetFootprintStateRequestDto requestDto);
 }

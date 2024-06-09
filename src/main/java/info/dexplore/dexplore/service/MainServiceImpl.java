@@ -1379,6 +1379,26 @@ public class MainServiceImpl implements MainService {
             return ResponseDto.databaseError();
         }
     }
+    /**
+     * 요청자가 해당 작품을 방문했는지 여부
+     * @return validationFailed, databaseError, success
+     */
+    @Override
+    public ResponseEntity<? super GetFootprintStateResponseDto> getFootprintState(GetFootprintStateRequestDto requestDto) {
+        try {
+
+            String userId = findUserIdFromJwt();
+            Long artId = requestDto.getArtId();
+
+            boolean exists = footprintRepository.existsByUserIdAndArtId(userId, artId);
+
+            return GetFootprintStateResponseDto.success(exists);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+    }
 
     /**
      * 요청자의 JWT에서 userId 추출

@@ -149,7 +149,7 @@ public class UserController {
      * @return validationFailed, databaseError, artNotFound, success
      */
     @PostMapping("/bookmarking")
-    public ResponseEntity<? super BookmarkingResponseDto> getViewingRate(@RequestBody @Valid BookmarkingRequestDto requestDto) {
+    public ResponseEntity<? super BookmarkingResponseDto> bookmarking(@RequestBody @Valid BookmarkingRequestDto requestDto) {
         ResponseEntity<? super BookmarkingResponseDto> response = mainService.bookmarking(requestDto);
         log.info("[bookmarking]");
         return response;
@@ -169,7 +169,7 @@ public class UserController {
      * @return validationFailed, databaseError, success
      */
     @GetMapping("/get-bookmarked-arts")
-    public ResponseEntity<? super GetBookmarkedArtsResponseDto> getBookmarkList(@ModelAttribute @Valid GetBookmarkedArtsRequestDto requestDto) {
+    public ResponseEntity<? super GetBookmarkedArtsResponseDto> getBookmarkArtList(@ModelAttribute @Valid GetBookmarkedArtsRequestDto requestDto) {
         ResponseEntity<? super GetBookmarkedArtsResponseDto> response = mainService.getBookmarkedArtList(requestDto);
         log.info("[getBookmarkArtList]");
         return response;
@@ -179,9 +179,20 @@ public class UserController {
      * @return validationFailed, databaseError, success
      */
     @GetMapping("/check-bookmark")
-    public ResponseEntity<? super CheckBookmarkResponseDto> getBookmarkList(@ModelAttribute @Valid CheckBookmarkRequestDto requestDto) {
+    public ResponseEntity<? super CheckBookmarkResponseDto> checkBookmark(@ModelAttribute @Valid CheckBookmarkRequestDto requestDto) {
         ResponseEntity<? super CheckBookmarkResponseDto> response = mainService.checkBookmark(requestDto);
         log.info("[checkBookmark]");
+        return response;
+    }
+
+    /**
+     * 방문 여부 반환
+     * @return validationFailed, databaseError, success
+     */
+    @GetMapping("/get-footprint-state")
+    public ResponseEntity<? super GetFootprintStateResponseDto> getFootPrintState(@ModelAttribute @Valid GetFootprintStateRequestDto requestDto) {
+        ResponseEntity<? super GetFootprintStateResponseDto> response = mainService.getFootprintState(requestDto);
+        log.info("[getFootPrintState]");
         return response;
     }
 
